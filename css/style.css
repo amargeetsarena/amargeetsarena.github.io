@@ -141,38 +141,15 @@ nav button:hover { background: #ff8a65; color: white; }
     min-width: 120px;
 }
 
-/* Hide the grid view button in list view and vice versa */
-#menu-container:not(.list-view) .list-view-btn,
-#menu-container.list-view .order-btn:not(.list-view-btn) {
-    display: none;
-}
-
-/* List view button styles */
-#menu-container.list-view .list-view-btn {
+#menu-container.list-view .order-btn {
     grid-column: 3;
-    grid-row: 1 / -1;
-    margin: 0 0 0 0.5em;
-    padding: 0.3em 0.6em;
-    font-size: 0.85em;
+    grid-row: 3;
+    margin: 0;
+    padding: 0.4em 0.8em;
+    font-size: 0.9em;
     white-space: nowrap;
     justify-self: end;
-    align-self: center;
-    border-radius: 4px;
-    height: fit-content;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 60px;
-    background: #25D366;
-    color: white;
-    border: none;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-
-#menu-container.list-view .list-view-btn i {
-    margin: 0;
-    font-size: 1em;
+    align-self: end;
 }
 
 /* Responsive adjustments for list view */
@@ -225,15 +202,9 @@ nav button:hover { background: #ff8a65; color: white; }
         transform-origin: right;
     }
     
-    #menu-container.list-view .list-view-btn {
-        padding: 0.2em 0.4em;
-        font-size: 0.8em;
-        margin-left: 0.3em;
-        min-width: 50px;
-    }
-    
-    #menu-container.list-view .list-view-btn i {
-        display: none; /* Hide icon on very small screens */
+    #menu-container.list-view .order-btn {
+        padding: 0.3em 0.6em;
+        font-size: 0.85em;
     }
 }
 .menu-item { 

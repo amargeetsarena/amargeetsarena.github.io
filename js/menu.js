@@ -198,11 +198,8 @@ const menuItems = [
           </div>
         </div>
         
-        <button type="button" class="order-btn" data-item="${item.name}" data-view="grid">
+        <button type="button" class="order-btn" data-item="${item.name}">
           <i class="fab fa-whatsapp"></i> Order on WhatsApp
-        </button>
-        <button type="button" class="order-btn list-view-btn" data-item="${item.name}" data-view="list">
-          <i class="fab fa-whatsapp"></i> Order
         </button>
       `;
       
