@@ -2,52 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Apartment Food Menu</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <title>Modern Food Menu</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <!-- Header -->
   <header>
-    <img src="images/logo.png" alt="Logo" class="logo">
+    <h1>Delicious Menu</h1>
     <nav>
-      <ul>
-        <li><a href="index.html">Menu</a></li>
-        <li><a href="about.html">About</a></li>
-      </ul>
+      <button onclick="filterMenu('all')">All</button>
+      <button onclick="filterMenu('veg')">Veg</button>
+      <button onclick="filterMenu('nonveg')">Non-Veg</button>
+      <button onclick="filterMenu('withoutoniongarlic')">Without Onion/Garlic</button>
     </nav>
   </header>
-
-  <!-- Hero -->
-  <section class="hero">
-    <h1>Welcome to Our Apartment Kitchen</h1>
-    <p>Delicious homemade food delivered to your door</p>
-  </section>
-
-  <!-- Menu Categories -->
-  <section class="menu">
-    <h2>Our Menu</h2>
-
-    <h3>🍃 Veg</h3>
-    <ul>
-      <li>Paneer Butter Masala – ₹120 <a href="https://wa.me/919439308689?text=I%20want%20to%20order%20Paneer%20Butter%20Masala" target="_blank">Order</a></li>
-      <li>Veg Pulao – ₹90 <a href="https://wa.me/919439308689?text=I%20want%20to%20order%20Veg%20Pulao" target="_blank">Order</a></li>
-    </ul>
-
-    <h3>🍗 Non-Veg</h3>
-    <ul>
-      <li>Chicken Curry – ₹150 <a href="https://wa.me/919439308689?text=I%20want%20to%20order%20Chicken%20Curry" target="_blank">Order</a></li>
-    </ul>
-
-    <h3>🙏 Without Onion & Garlic</h3>
-    <ul>
-      <li>Aloo Tomato Curry – ₹80 <a href="https://wa.me/919439308689?text=I%20want%20to%20order%20Aloo%20Tomato%20Curry" target="_blank">Order</a></li>
-    </ul>
-  </section>
-
-  <!-- Footer -->
-  <footer>
-    <p>&copy; 2025 Apartment Kitchen | Contact us on <a href="https://wa.me/919439308689" target="_blank">WhatsApp</a></p>
-  </footer>
+  <main>
+    <div id="menu-container"></div>
+  </main>
+  <footer><p>&copy; 2025 Foodies</p></footer>
+  <script src="js/menu.js"></script>
 </body>
 </html>
