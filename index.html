@@ -4,7 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Order delicious food online with delivery options">
-  <title>Delicious Food Menu | Order Online</title>
+  <title>Amargeet's Arena | Food Delivery</title>
+  <link rel="icon" type="image/png" href="images/logo.png">
+  <link rel="apple-touch-icon" href="images/logo.png">
+  <meta name="theme-color" content="#ff7043">
   <link rel="stylesheet" href="css/style.css">
   <!-- Font Awesome for icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -32,7 +35,10 @@
 <body>
   <header>
     <div class="header-top">
-      <h1><i class="fas fa-utensils"></i> Delicious Menu</h1>
+      <h1 class="site-title">
+        <img src="images/logo.png" alt="Amargeet's Arena" class="site-logo">
+        <span>Amargeet's Arena</span>
+      </h1>
       <div class="view-toggle">
         <button id="grid-view-btn" class="view-btn active" title="Grid View">
           <i class="fas fa-th-large"></i>
@@ -43,16 +49,39 @@
       </div>
     </div>
     <nav>
-      <button onclick="filterMenu('all')"><i class="fas fa-pizza-slice"></i> All</button>
-      <button onclick="filterMenu('veg')"><i class="fas fa-leaf"></i> Veg</button>
-      <button onclick="filterMenu('nonveg')"><i class="fas fa-drumstick-bite"></i> Non-Veg</button>
-      <button onclick="filterMenu('withoutoniongarlic')"><i class="fas fa-ban"></i> No Onion/Garlic</button>
-    </nav>
+      <button class="active" data-category="all"><i class="fas fa-pizza-slice"></i> All</button>
+      <button data-category="veg"><i class="fas fa-leaf"></i> Veg</button>
+      <button data-category="nonveg"><i class="fas fa-drumstick-bite"></i> Non-Veg</button>
+      <button data-category="withoutoniongarlic"><i class="fas fa-bread-slice"></i> No Onion/Garlic</button>
   </header>
   <main>
     <div id="menu-container"></div>
   </main>
-  <footer><p>&copy; 2025 Foodies</p></footer>
+  
+  <footer class="site-footer">
+    <div class="footer-content">
+      <div class="footer-section">
+        <h3>Amargeet's Arena</h3>
+        <p>Delicious food delivered to your doorstep</p>
+      </div>
+      <div class="footer-section">
+        <h4>Contact Us</h4>
+              <p><i class="fas fa-phone"></i> +91 98862 79615</p>
+              <p><i class="fas fa-envelope"></i> amargeetsarena@gmail.com</p>
+      </div>
+      <div class="footer-section">
+        <h4>Follow Us</h4>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2023 Amargeet's Arena. All rights reserved.</p>
+    </div>
+  </footer>
   <script src="js/menu.js"></script>
 </body>
 </html>
