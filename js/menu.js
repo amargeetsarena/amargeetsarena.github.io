@@ -1,7 +1,7 @@
 const menuItems = [
   {
     name: "Chocolate Cake",
-    image: "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg",
+    image: "images/chocolatecake.png",
     category: "veg",
     desc: "Delicious eggless chocolate cake, perfect for any occasion.",
     price: "₹200",
@@ -10,7 +10,7 @@ const menuItems = [
   }
 ];
 
-const whatsappNumber = "919886279615";
+const whatsappNumber = "917899417495";
 
 function updateQuantity(button, delta, item, quantityElement, priceElement) {
   let quantity = parseInt(quantityElement.textContent) || 1;
@@ -86,6 +86,7 @@ function renderMenu(filter) {
         </div>
         <div class="total-price">Total: ${item.price}</div>
       
+        <form class="order-form">
         <div class="delivery-options">
           <div class="form-group">
             <label for="delivery-date-${item.name.replace(/\s+/g, '-').toLowerCase()}">
@@ -95,7 +96,6 @@ function renderMenu(filter) {
                    id="delivery-date-${item.name.replace(/\s+/g, '-').toLowerCase()}" 
                    class="delivery-date" 
                    min="${minDate}" 
-                   value="${defaultDate}"
                    data-item="${item.name}"
                    required
                    oninvalid="this.setCustomValidity('Please select a delivery date')"
@@ -110,9 +110,9 @@ function renderMenu(filter) {
                     class="delivery-time" 
                     data-item="${item.name}"
                     required>
-              <option value="">Select Time</option>
+              <option value="" selected>Select Time</option>
               <option value="Morning (9 AM - 12 PM)">Morning (9 AM - 12 PM)</option>
-              <option value="Afternoon (12 PM - 3 PM)" selected>Afternoon (12 PM - 3 PM)</option>
+              <option value="Afternoon (12 PM - 3 PM)">Afternoon (12 PM - 3 PM)</option>
               <option value="Evening (3 PM - 6 PM)">Evening (3 PM - 6 PM)</option>
             </select>
           </div>
@@ -144,10 +144,11 @@ function renderMenu(filter) {
                    required>
           </div>
           
-          <button class="order-btn" data-item="${item.name}">
+          <button type="submit" class="order-btn" data-item="${item.name}">
             <i class="fab fa-whatsapp"></i> Order Now
           </button>
         </div>
+        </form>
       </div>
     `;
     
@@ -167,16 +168,17 @@ function renderMenu(filter) {
       updateQuantity(plusBtn, 1, item, quantityEl, priceEl);
     });
     
-    // Add event listener for order button
-    const orderBtn = itemElement.querySelector('.order-btn');
+    // Add event listener for order form
+    const orderForm = itemElement.querySelector('.order-form');
     const dateInput = itemElement.querySelector('.delivery-date');
     const timeSelect = itemElement.querySelector('.delivery-time');
     const wingSelect = itemElement.querySelector('.delivery-wing');
     const flatInput = itemElement.querySelector('.delivery-flat');
     
-    orderBtn.addEventListener('click', () => {
+    orderForm.addEventListener('submit', (e) => {
+      e.preventDefault();
       try {
-        // Validate form
+        // Validate form (additional checks for user experience)
         if (!dateInput.value) {
           alert('Please select a delivery date');
           dateInput.focus();
