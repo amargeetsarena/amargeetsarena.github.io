@@ -1,8 +1,241 @@
-body { font-family: sans-serif; margin: 0; background: #fafafa; }
-header { background: #ff7043; color: #fff; padding: 1em; text-align: center; }
+body { font-family: 'Poppins', sans-serif; margin: 0; background: #fafafa; }
+
+/* Header Styles */
+header { 
+    background: #ff7043; 
+    color: #fff; 
+    padding: 1em; 
+    text-align: center; 
+}
+
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1em;
+}
+
+.view-toggle {
+    display: flex;
+    gap: 5px;
+}
+
+.view-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.view-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
+}
+
+.view-btn.active {
+    background: white;
+    color: #ff7043;
+}
 nav button { margin: 0 5px; padding: 0.5em 1em; cursor: pointer; background: #fff; color: #ff7043; border: none; border-radius: 4px; transition: all 0.2s; }
 nav button:hover { background: #ff8a65; color: white; }
-#menu-container { display: flex; flex-wrap: wrap; gap: 2em; padding: 2em; justify-content: center; }
+/* Menu Container */
+#menu-container { 
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2em;
+    padding: 2em;
+    max-width: 1400px;
+    margin: 0 auto;
+    transition: all 0.3s ease;
+}
+
+/* List View Styles */
+#menu-container.list-view {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+    padding: 1em;
+}
+
+#menu-container.list-view .menu-item {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 100px 1fr auto;
+    grid-template-rows: auto auto auto;
+    gap: 0.5em 1em;
+    padding: 1em;
+    align-items: center;
+    margin-bottom: 0.5em;
+}
+
+#menu-container.list-view .menu-item img {
+    grid-row: 1 / -1;
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin: 0;
+}
+
+#menu-container.list-view .menu-item h2 {
+    grid-column: 2;
+    grid-row: 1;
+    margin: 0;
+    font-size: 1.1em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#menu-container.list-view .menu-item .price,
+#menu-container.list-view .menu-item .qty {
+    grid-column: 2;
+    margin: 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+#menu-container.list-view .menu-item .desc {
+    display: none; /* Hide description in compact view */
+}
+
+#menu-container.list-view .quantity-selector {
+    grid-column: 3;
+    grid-row: 1;
+    margin: 0;
+    justify-self: end;
+}
+
+#menu-container.list-view .total-price {
+    grid-column: 3;
+    grid-row: 2;
+    text-align: right;
+    margin: 0;
+    font-size: 1.1em;
+    color: #ff7043;
+}
+
+#menu-container.list-view .delivery-options {
+    grid-column: 2 / -1;
+    grid-row: 3;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em;
+    margin: 0.5em 0 0 0;
+    padding: 0.5em 0 0 0;
+    border-top: 1px solid #eee;
+}
+
+#menu-container.list-view .form-group {
+    margin: 0;
+    flex: 1;
+    min-width: 120px;
+}
+
+/* Hide the grid view button in list view and vice versa */
+#menu-container:not(.list-view) .list-view-btn,
+#menu-container.list-view .order-btn:not(.list-view-btn) {
+    display: none;
+}
+
+/* List view button styles */
+#menu-container.list-view .list-view-btn {
+    grid-column: 3;
+    grid-row: 1 / -1;
+    margin: 0 0 0 0.5em;
+    padding: 0.3em 0.6em;
+    font-size: 0.85em;
+    white-space: nowrap;
+    justify-self: end;
+    align-self: center;
+    border-radius: 4px;
+    height: fit-content;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 60px;
+    background: #25D366;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#menu-container.list-view .list-view-btn i {
+    margin: 0;
+    font-size: 1em;
+}
+
+/* Responsive adjustments for list view */
+@media (max-width: 992px) {
+    #menu-container.list-view .menu-item {
+        grid-template-columns: 80px 1fr auto;
+        gap: 0.3em 0.8em;
+        padding: 0.8em;
+    }
+    
+    #menu-container.list-view .menu-item img {
+        height: 60px;
+    }
+    
+    #menu-container.list-view .menu-item h2 {
+        font-size: 1em;
+    }
+    
+    #menu-container.list-view .menu-item .price,
+    #menu-container.list-view .menu-item .qty {
+        font-size: 0.85em;
+    }
+    
+    #menu-container.list-view .form-group {
+        min-width: 100px;
+    }
+    
+    #menu-container.list-view .delivery-options {
+        flex-direction: column;
+        gap: 0.3em;
+    }
+    
+    #menu-container.list-view .form-group {
+        min-width: 100%;
+    }
+}
+
+@media (max-width: 576px) {
+    #menu-container.list-view .menu-item {
+        grid-template-columns: 60px 1fr auto;
+        font-size: 0.9em;
+    }
+    
+    #menu-container.list-view .menu-item img {
+        height: 50px;
+    }
+    
+    #menu-container.list-view .quantity-selector {
+        transform: scale(0.9);
+        transform-origin: right;
+    }
+    
+    #menu-container.list-view .list-view-btn {
+        padding: 0.2em 0.4em;
+        font-size: 0.8em;
+        margin-left: 0.3em;
+        min-width: 50px;
+    }
+    
+    #menu-container.list-view .list-view-btn i {
+        display: none; /* Hide icon on very small screens */
+    }
+}
 .menu-item { 
     background: #fff; 
     border: 1px solid #eee; 
@@ -123,13 +356,55 @@ nav button:hover { background: #ff8a65; color: white; }
     outline: none;
 }
 
-.delivery-time {
+/* Style for both time and wing dropdowns */
+.delivery-time,
+.delivery-wing {
     appearance: none;
     background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
     background-repeat: no-repeat;
     background-position: right 10px center;
     background-size: 16px;
     padding-right: 35px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 0.95em;
+    background-color: #fff;
+    transition: all 0.2s;
+    box-sizing: border-box;
+    cursor: pointer;
+}
+
+/* Hover and focus states */
+.delivery-time:hover,
+.delivery-wing:hover {
+    border-color: #ff8a65;
+}
+
+.delivery-time:focus,
+.delivery-wing:focus {
+    border-color: #ff8a65;
+    box-shadow: 0 0 0 2px rgba(255, 112, 67, 0.2);
+    outline: none;
+}
+
+/* Style for dropdown options */
+.delivery-wing option {
+    padding: 10px;
+    background: #fff;
+    color: #333;
+}
+
+/* Style for the first option (placeholder) */
+.delivery-wing option:first-child {
+    color: #999;
+}
+
+/* Style for when dropdown is open */
+.delivery-wing:focus option:checked {
+    background: #ff7043;
+    color: white;
 }
 
 /* Order Button Styles */
