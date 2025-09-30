@@ -57,12 +57,13 @@ function setupOrderButton(item, quantityElement, dateElement, timeElement, order
   message += `📋 Order Type: ${orderType === 'pickup' ? 'Pickup' : 'Delivery'}\n`;
   message += `📅 Date: ${orderDate}\n`;
   if (orderTime) message += `⏰ Time: ${orderTime}\n`;
-  if (orderType === 'delivery') {
+  if (orderType === 'pickup') {
+    message += `📍 Pick up from: Wing 3, Flat 1010\n`;
+  } else if (orderType === 'delivery') {
     if (wing) message += `🏢 Wing: ${wing}\n`;
     if (flat) message += `🏠 Flat: ${flat}\n`;
   }
   message += `\nPlease confirm my order. Thank you!`;
-  
   return encodeURIComponent(message);
 }
 
@@ -135,6 +136,7 @@ function renderMenu(filter) {
                      id="delivery-date-${item.name.replace(/\s+/g, '-').toLowerCase()}" 
                      class="delivery-date" 
                      min="${minDate}" 
+                     value="${tomorrowStr}"
                      data-item="${item.name}"
                      required
                      oninvalid="this.setCustomValidity('Please select a delivery date')"

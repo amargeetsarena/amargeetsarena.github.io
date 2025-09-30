@@ -58,6 +58,15 @@ header {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 1em;
+    align-items: start; /* Align items to top */
+}
+
+.footer-section {
+    text-align: center; /* Center all footer section content */
+    width: 100%; /* Ensure full width */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center flex items */
 }
 
 .footer-section h3, .footer-section h4 {
@@ -76,16 +85,28 @@ header {
     gap: 1em;
     margin-top: 1em;
     justify-content: center;
+    align-items: center; /* Ensure vertical alignment */
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+    width: 100%; /* Ensure it takes full width */
 }
 
 .social-links a {
     color: #ecf0f1;
     font-size: 1.5em;
-    transition: color 0.3s ease;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .social-links a:hover {
     color: #ff7043;
+    background: rgba(255, 112, 67, 0.2);
+    transform: scale(1.1);
 }
 
 .footer-bottom {
@@ -111,6 +132,7 @@ header {
     .footer-content {
         grid-template-columns: 1fr;
         text-align: center;
+        align-items: center; /* Center items on mobile */
     }
     
     .social-links {
@@ -447,7 +469,21 @@ nav button[data-category="nonveg"].active {
     box-shadow: 0 4px 12px #0002;
 }
 .menu-item img { width: 100%; border-radius: 8px; height: 180px; object-fit: cover; }
-.menu-item h2 { margin: 0.8em 0 0.3em; font-size: 1.3em; color: #333; text-align: center; }
+.menu-item h2 {
+    margin: 0.8em 0 0.3em;
+    font-size: 1.3em;
+    color: #333;
+    text-align: center;
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    hyphens: auto;
+    max-height: 3.9em; /* Allow up to 3 lines (1.3em * 3) */
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    line-clamp: 3;
+}
 .menu-item .price { color: #388e3c; font-weight: bold; margin: 0.5em 0; font-size: 1.1em; }
 .menu-item .qty { color: #757575; font-size: 0.95em; margin-bottom: 0.5em; }
 .menu-item .desc { margin: 0.5em 0 1.2em; min-height: 3em; color: #555; text-align: center; line-height: 1.4; }
