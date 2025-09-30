@@ -7,6 +7,24 @@ const menuItems = [
     price: "₹200",
     qty: "Half kg",
     basePrice: 200
+  },
+  {
+    name: "Maggi Pakoda",
+    image: "images/maggipakoda.png",
+    category: "veg",
+    desc: "Crispy Maggi noodles fried into delicious pakoda pieces.",
+    price: "₹100",
+    qty: "10 pieces",
+    basePrice: 100
+  },
+  {
+    name: "Cheesy Chicken Zingy Parcel",
+    image: "images/cheesychickenzingyparcel.png",
+    category: "nonveg",
+    desc: "Spicy and cheesy chicken parcels with zingy flavors.",
+    price: "₹200",
+    qty: "4 pieces",
+    basePrice: 200
   }
 ];
 
@@ -23,11 +41,12 @@ function updateQuantity(button, delta, item, quantityElement, priceElement) {
   priceElement.textContent = `Total: ₹${totalPrice}`;
 }
 
-function setupOrderButton(item, quantityElement, dateElement, timeElement, wingElement, flatElement) {
+function setupOrderButton(item, quantityElement, dateElement, timeElement, orderTypeElement, wingElement, flatElement) {
   const quantity = parseInt(quantityElement.textContent);
   const totalPrice = item.basePrice * quantity;
   const orderDate = dateElement ? dateElement.value : 'ASAP';
   const orderTime = timeElement ? timeElement.value : '';
+  const orderType = orderTypeElement ? orderTypeElement.value : 'delivery';
   const wing = wingElement ? wingElement.value : '';
   const flat = flatElement ? flatElement.value : '';
   
@@ -35,11 +54,14 @@ function setupOrderButton(item, quantityElement, dateElement, timeElement, wingE
   message += `🍽️ *${item.name}* (${item.qty})\n`;
   message += `🔢 Quantity: ${quantity}\n`;
   message += `💰 Total Price: ₹${totalPrice}\n`;
+  message += `📋 Order Type: ${orderType === 'pickup' ? 'Pickup' : 'Delivery'}\n`;
   message += `📅 Date: ${orderDate}\n`;
   if (orderTime) message += `⏰ Time: ${orderTime}\n`;
-  if (wing) message += `🏢 Wing: ${wing}\n`;
-  if (flat) message += `🏠 Flat: ${flat}\n\n`;
-  message += `Please confirm my order. Thank you!`;
+  if (orderType === 'delivery') {
+    if (wing) message += `🏢 Wing: ${wing}\n`;
+    if (flat) message += `🏠 Flat: ${flat}\n`;
+  }
+  message += `\nPlease confirm my order. Thank you!`;
   
   return encodeURIComponent(message);
 }
@@ -72,7 +94,7 @@ function renderMenu(filter) {
     const defaultDate = tomorrow.toISOString().split('T')[0];
     
     itemElement.innerHTML = `
-      <img src="${item.image}" alt="${item.name}">
+      <img src="${item.image}" alt="${item.name}" onerror="this.src='images/logo.png'">
       <div class="menu-item-content">
         <h2>${item.name}</h2>
         <div class="desc">${item.desc}</div>
@@ -88,6 +110,20 @@ function renderMenu(filter) {
       
         <form class="order-form">
         <div class="delivery-options">
+          <div class="form-group pickup-delivery-group">
+            <label><i class="fas fa-truck"></i> Order Type</label>
+            <div class="pickup-delivery-options">
+              <label class="radio-label">
+                <input type="radio" name="order-type-${item.name.replace(/\s+/g, '-').toLowerCase()}" value="pickup" class="order-type" data-item="${item.name}" required>
+                <span>Pickup</span>
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="order-type-${item.name.replace(/\s+/g, '-').toLowerCase()}" value="delivery" class="order-type" data-item="${item.name}" required checked>
+                <span>Delivery</span>
+              </label>
+            </div>
+          </div>
+          
           <div class="form-group">
             <label for="delivery-date-${item.name.replace(/\s+/g, '-').toLowerCase()}">
               <i class="far fa-calendar-alt"></i> Delivery Date
@@ -117,7 +153,7 @@ function renderMenu(filter) {
             </select>
           </div>
           
-          <div class="form-group">
+          <div class="form-group delivery-only" id="wing-group-${item.name.replace(/\s+/g, '-').toLowerCase()}">
             <label for="wing-${item.name.replace(/\s+/g, '-').toLowerCase()}">
               <i class="fas fa-building"></i> Wing
             </label>
@@ -132,7 +168,7 @@ function renderMenu(filter) {
             </select>
           </div>
           
-          <div class="form-group">
+          <div class="form-group delivery-only" id="flat-group-${item.name.replace(/\s+/g, '-').toLowerCase()}">
             <label for="flat-${item.name.replace(/\s+/g, '-').toLowerCase()}">
               <i class="fas fa-home"></i> Flat No.
             </label>
@@ -168,10 +204,46 @@ function renderMenu(filter) {
       updateQuantity(plusBtn, 1, item, quantityEl, priceEl);
     });
     
+    // Add event listeners for pickup/delivery toggle
+    const orderTypeRadios = itemElement.querySelectorAll('.order-type');
+    const wingGroup = itemElement.querySelector('.delivery-only');
+    const flatGroup = itemElement.querySelector('.delivery-only');
+    
+    function toggleDeliveryFields() {
+      const selectedOrderType = itemElement.querySelector('.order-type:checked').value;
+      const deliveryOnlyFields = itemElement.querySelectorAll('.delivery-only');
+      const wingInput = itemElement.querySelector('.delivery-wing');
+      const flatInput = itemElement.querySelector('.delivery-flat');
+      
+      if (selectedOrderType === 'pickup') {
+        deliveryOnlyFields.forEach(field => {
+          field.style.display = 'none';
+        });
+        // Remove required attribute for delivery fields
+        if (wingInput) wingInput.required = false;
+        if (flatInput) flatInput.required = false;
+      } else {
+        deliveryOnlyFields.forEach(field => {
+          field.style.display = 'block';
+        });
+        // Add required attribute for delivery fields
+        if (wingInput) wingInput.required = true;
+        if (flatInput) flatInput.required = true;
+      }
+    }
+    
+    orderTypeRadios.forEach(radio => {
+      radio.addEventListener('change', toggleDeliveryFields);
+    });
+    
+    // Initialize delivery fields visibility
+    toggleDeliveryFields();
+    
     // Add event listener for order form
     const orderForm = itemElement.querySelector('.order-form');
     const dateInput = itemElement.querySelector('.delivery-date');
     const timeSelect = itemElement.querySelector('.delivery-time');
+    const orderTypeInput = itemElement.querySelector('.order-type:checked');
     const wingSelect = itemElement.querySelector('.delivery-wing');
     const flatInput = itemElement.querySelector('.delivery-flat');
     
@@ -179,6 +251,12 @@ function renderMenu(filter) {
       e.preventDefault();
       try {
         // Validate form (additional checks for user experience)
+        const selectedOrderType = itemElement.querySelector('.order-type:checked');
+        if (!selectedOrderType) {
+          alert('Please select pickup or delivery');
+          return;
+        }
+        
         if (!dateInput.value) {
           alert('Please select a delivery date');
           dateInput.focus();
@@ -191,10 +269,18 @@ function renderMenu(filter) {
           return;
         }
         
-        if (!flatInput.value) {
-          alert('Please enter your flat number');
-          flatInput.focus();
-          return;
+        if (selectedOrderType.value === 'delivery') {
+          if (!wingSelect.value) {
+            alert('Please select your wing');
+            wingSelect.focus();
+            return;
+          }
+          
+          if (!flatInput.value) {
+            alert('Please enter your flat number');
+            flatInput.focus();
+            return;
+          }
         }
         
         // Prepare WhatsApp message
@@ -203,6 +289,7 @@ function renderMenu(filter) {
           quantityEl,
           dateInput,
           timeSelect,
+          selectedOrderType,
           wingSelect,
           flatInput
         );
