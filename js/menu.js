@@ -90,8 +90,11 @@ function renderMenu(filter) {
     tomorrow.setDate(tomorrow.getDate() + 1);
     
     // Format date for input field (YYYY-MM-DD)
-    const minDate = today.toISOString().split('T')[0];
-    const defaultDate = tomorrow.toISOString().split('T')[0];
+    const todayStr = today.toISOString().split('T')[0];
+    const tomorrowStr = tomorrow.toISOString().split('T')[0];
+    
+    // Default minDate is today for evening/night deliveries
+    let minDate = todayStr;
     
     itemElement.innerHTML = `
       <img src="${item.image}" alt="${item.name}" onerror="this.src='images/logo.png'">
@@ -147,9 +150,6 @@ function renderMenu(filter) {
                     data-item="${item.name}"
                     required>
               <option value="" selected>Select Time</option>
-              <option value="Morning (9 AM - 12 PM)">Morning (9 AM - 12 PM)</option>
-              <option value="Afternoon (12 PM - 3 PM)">Afternoon (12 PM - 3 PM)</option>
-              <option value="Evening (3 PM - 6 PM)">Evening (3 PM - 6 PM)</option>
             </select>
           </div>
           
@@ -239,10 +239,89 @@ function renderMenu(filter) {
     // Initialize delivery fields visibility
     toggleDeliveryFields();
     
+    // Add event listener for delivery time changes to update min date
+    const timeSelect = itemElement.querySelector('.delivery-time');
+    const dateInput = itemElement.querySelector('.delivery-date');
+    
+    function updateMinDate() {
+      if (timeSelect && dateInput) {
+        const selectedTime = timeSelect.value;
+        const selectedDate = dateInput.value;
+        
+        // For morning and afternoon deliveries, minimum date is tomorrow
+        if (selectedTime.includes('Morning') || selectedTime.includes('Afternoon')) {
+          dateInput.min = tomorrowStr;
+          // If current value is today, change it to tomorrow
+          if (dateInput.value === todayStr) {
+            dateInput.value = tomorrowStr;
+          }
+        } else {
+          // For evening, night, and late night deliveries, minimum date is today
+          dateInput.min = todayStr;
+        }
+        
+        // Update available time slots based on selected date
+        updateAvailableTimeSlots(selectedDate);
+      }
+    }
+    
+    function updateAvailableTimeSlots(selectedDate) {
+      if (!timeSelect) return;
+      
+      const now = new Date();
+      const currentHour = now.getHours();
+      const isToday = selectedDate === todayStr;
+      
+      const allSlots = [
+        { value: "Morning (9 AM - 12 PM)", startHour: 9, endHour: 12 },
+        { value: "Afternoon (12 PM - 3 PM)", startHour: 12, endHour: 15 },
+        { value: "Evening (3 PM - 6 PM)", startHour: 15, endHour: 18 },
+        { value: "Night (7 PM - 10 PM)", startHour: 19, endHour: 22 },
+        { value: "Late Night (10 PM - 12 AM)", startHour: 22, endHour: 24 }
+      ];
+      
+      let availableSlots;
+      if (isToday) {
+        // For today, only show slots that haven't started yet
+        availableSlots = allSlots.filter(slot => currentHour < slot.startHour);
+      } else {
+        // For future dates, show all slots
+        availableSlots = allSlots;
+      }
+      
+      // Update the select options
+      const currentValue = timeSelect.value;
+      timeSelect.innerHTML = '<option value="" selected>Select Time</option>';
+      
+      availableSlots.forEach(slot => {
+        const option = document.createElement('option');
+        option.value = slot.value;
+        option.textContent = slot.value;
+        timeSelect.appendChild(option);
+      });
+      
+      // Restore previously selected value if it's still available
+      if (currentValue && availableSlots.some(slot => slot.value === currentValue)) {
+        timeSelect.value = currentValue;
+      } else {
+        timeSelect.value = '';
+      }
+    }
+    
+    // Initial update
+    updateMinDate();
+    
+    // Update when time selection changes
+    timeSelect.addEventListener('change', updateMinDate);
+    
+    // Update when date selection changes
+    dateInput.addEventListener('change', () => {
+      const selectedDate = dateInput.value;
+      updateAvailableTimeSlots(selectedDate);
+    });
+    
     // Add event listener for order form
     const orderForm = itemElement.querySelector('.order-form');
-    const dateInput = itemElement.querySelector('.delivery-date');
-    const timeSelect = itemElement.querySelector('.delivery-time');
     const orderTypeInput = itemElement.querySelector('.order-type:checked');
     const wingSelect = itemElement.querySelector('.delivery-wing');
     const flatInput = itemElement.querySelector('.delivery-flat');
