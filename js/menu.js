@@ -79,10 +79,9 @@ function renderMenu(filter) {
     container.innerHTML = '<div class="no-items">No items found in this category.</div>';
     return;
   }
-  
   items.forEach(item => {
     const itemElement = document.createElement('div');
-    itemElement.className = 'menu-item';
+    itemElement.className = `menu-item ${item.category}`;
     
     // Get current date and time
     const today = new Date();
@@ -117,11 +116,11 @@ function renderMenu(filter) {
             <label><i class="fas fa-truck"></i> Order Type</label>
             <div class="pickup-delivery-options">
               <label class="radio-label">
-                <input type="radio" name="order-type-${item.name.replace(/\s+/g, '-').toLowerCase()}" value="pickup" class="order-type" data-item="${item.name}" required>
+                <input type="radio" name="order-type-${item.name.replace(/\s+/g, '-').toLowerCase()}" value="pickup" class="order-type" data-item="${item.name}" required checked>
                 <span>Pickup</span>
               </label>
               <label class="radio-label">
-                <input type="radio" name="order-type-${item.name.replace(/\s+/g, '-').toLowerCase()}" value="delivery" class="order-type" data-item="${item.name}" required checked>
+                <input type="radio" name="order-type-${item.name.replace(/\s+/g, '-').toLowerCase()}" value="delivery" class="order-type" data-item="${item.name}" required>
                 <span>Delivery</span>
               </label>
             </div>
@@ -129,21 +128,26 @@ function renderMenu(filter) {
           
           <div class="form-group">
             <label for="delivery-date-${item.name.replace(/\s+/g, '-').toLowerCase()}">
-              <i class="far fa-calendar-alt"></i> Delivery Date
+              <i class="far fa-calendar-alt"></i> Date
             </label>
-            <input type="date" 
-                   id="delivery-date-${item.name.replace(/\s+/g, '-').toLowerCase()}" 
-                   class="delivery-date" 
-                   min="${minDate}" 
-                   data-item="${item.name}"
-                   required
-                   oninvalid="this.setCustomValidity('Please select a delivery date')"
-                   oninput="this.setCustomValidity('')">
+            <div class="date-input-wrapper">
+              <input type="date" 
+                     id="delivery-date-${item.name.replace(/\s+/g, '-').toLowerCase()}" 
+                     class="delivery-date" 
+                     min="${minDate}" 
+                     data-item="${item.name}"
+                     required
+                     oninvalid="this.setCustomValidity('Please select a delivery date')"
+                     oninput="this.setCustomValidity('')">
+              <button type="button" class="calendar-btn" data-input-id="delivery-date-${item.name.replace(/\s+/g, '-').toLowerCase()}">
+                <i class="far fa-calendar-alt"></i>
+              </button>
+            </div>
           </div>
           
           <div class="form-group">
             <label for="delivery-time-${item.name.replace(/\s+/g, '-').toLowerCase()}">
-              <i class="far fa-clock"></i> Delivery Time
+              <i class="far fa-clock"></i> Time
             </label>
             <select id="delivery-time-${item.name.replace(/\s+/g, '-').toLowerCase()}" 
                     class="delivery-time" 
@@ -176,6 +180,9 @@ function renderMenu(filter) {
                    id="flat-${item.name.replace(/\s+/g, '-').toLowerCase()}" 
                    class="delivery-flat" 
                    placeholder="e.g. 101"
+                   pattern="[0-9]{1,4}"
+                   maxlength="4"
+                   title="Please enter a flat number (1-4 digits)"
                    data-item="${item.name}"
                    required>
           </div>
@@ -189,6 +196,15 @@ function renderMenu(filter) {
     `;
     
     container.appendChild(itemElement);
+    
+    // Add click handler to open modal (prevent when clicking on form elements)
+    itemElement.addEventListener('click', (e) => {
+      // Don't open modal if clicking on form elements
+      if (e.target.closest('form') || e.target.closest('button') || e.target.closest('input') || e.target.closest('select')) {
+        return;
+      }
+      openItemModal(item);
+    });
     
     // Add event listeners for quantity buttons
     const minusBtn = itemElement.querySelector('.minus');
@@ -320,6 +336,20 @@ function renderMenu(filter) {
       updateAvailableTimeSlots(selectedDate);
     });
     
+    // Add event listener for calendar button
+    const calendarBtn = itemElement.querySelector('.calendar-btn');
+    if (calendarBtn) {
+      calendarBtn.addEventListener('click', () => {
+        const inputId = calendarBtn.getAttribute('data-input-id');
+        const dateInput = document.getElementById(inputId);
+        if (dateInput) {
+          dateInput.focus();
+          // Try to open the calendar picker if supported
+          dateInput.showPicker && dateInput.showPicker();
+        }
+      });
+    }
+    
     // Add event listener for order form
     const orderForm = itemElement.querySelector('.order-form');
     const orderTypeInput = itemElement.querySelector('.order-type:checked');
@@ -446,3 +476,83 @@ document.addEventListener('DOMContentLoaded', function() {
   
   console.log('Menu initialized');
 });
+function openItemModal(item) {
+  // Remove existing modal if any
+  const existingModal = document.querySelector('.modal');
+  if (existingModal) {
+    existingModal.remove();
+  }
+  
+  // Create modal HTML
+  const modalHTML = `
+    <div class="modal" id="item-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>${item.name}</h2>
+          <span class="close-btn">&times;</span>
+        </div>
+        <div class="modal-body">
+          <img src="${item.image}" alt="${item.name}" class="modal-image" onerror="this.src='images/logo.png'">
+          <div class="modal-description">${item.desc}</div>
+          <div class="modal-details">
+            <div>
+              <div class="modal-price">${item.price}</div>
+              <div class="modal-quantity">${item.qty}</div>
+            </div>
+            <button class="order-btn" onclick="closeModalAndScroll('${item.name}')">
+              <i class="fab fa-whatsapp"></i> Order Now
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Add modal to body
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+  
+  // Show modal
+  const modal = document.getElementById('item-modal');
+  modal.style.display = 'block';
+  
+  // Add close event listeners
+  const closeBtn = modal.querySelector('.close-btn');
+  closeBtn.addEventListener('click', closeModal);
+  
+  // Close modal when clicking outside
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+  
+  // Close modal on Escape key
+  document.addEventListener('keydown', handleEscape);
+  function handleEscape(e) {
+    if (e.key === 'Escape') {
+      closeModal();
+      document.removeEventListener('keydown', handleEscape);
+    }
+  }
+}
+
+function closeModal() {
+  const modal = document.getElementById('item-modal');
+  if (modal) {
+    modal.style.display = 'none';
+    setTimeout(() => modal.remove(), 300); // Remove after animation
+  }
+}
+
+function closeModalAndScroll(itemName) {
+  closeModal();
+  // Scroll to the item and highlight it
+  const itemElement = document.querySelector(`[data-item="${itemName}"]`);
+  if (itemElement) {
+    itemElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    itemElement.style.boxShadow = '0 0 20px rgba(255, 112, 67, 0.6)';
+    setTimeout(() => {
+      itemElement.style.boxShadow = '';
+    }, 2000);
+  }
+}

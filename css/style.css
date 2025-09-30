@@ -197,6 +197,31 @@ nav button.active {
   box-shadow: 0 4px 8px rgba(255, 112, 67, 0.3);
 }
 
+/* Category Button Theme Styles */
+nav button[data-category="veg"] {
+  background: #4caf50;
+  color: white;
+  box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+}
+
+nav button[data-category="veg"]:hover,
+nav button[data-category="veg"].active {
+  background: #388e3c;
+  box-shadow: 0 4px 8px rgba(56, 142, 60, 0.4);
+}
+
+nav button[data-category="nonveg"] {
+  background: #f44336;
+  color: white;
+  box-shadow: 0 2px 5px rgba(244, 67, 54, 0.3);
+}
+
+nav button[data-category="nonveg"]:hover,
+nav button[data-category="nonveg"].active {
+  background: #d32f2f;
+  box-shadow: 0 4px 8px rgba(211, 47, 47, 0.4);
+}
+
 /* Responsive adjustments for navigation */
 @media (max-width: 600px) {
   header nav {
@@ -664,11 +689,181 @@ nav button.active {
     }
 }
 
-footer { 
-    text-align: center; 
-    background: #333; 
-    color: #fff;
-    padding: 1.5em; 
-    margin-top: 2em; 
-    font-size: 0.9em;
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 600px;
+    position: relative;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #eee;
+    position: relative;
+}
+
+.modal-header h2 {
+    margin: 0;
+    color: #333;
+    font-size: 1.8em;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #ff7043;
+}
+
+.modal-body {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.modal-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.modal-description {
+    color: #555;
+    line-height: 1.6;
+    font-size: 1em;
+}
+
+.modal-details {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    background: #f8f8f8;
+    border-radius: 8px;
+}
+
+.modal-price {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #ff7043;
+}
+
+.modal-quantity {
+    color: #666;
+    font-size: 1em;
+}
+
+.menu-item {
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.menu-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px #0002;
+}
+
+/* Category Theme Styles */
+.menu-item.veg {
+    border-color: #4caf50;
+    box-shadow: 0 2px 6px rgba(76, 175, 80, 0.2);
+}
+
+.menu-item.veg .price {
+    color: #2e7d32;
+}
+
+.menu-item.veg .qty-btn {
+    background: #4caf50;
+    box-shadow: 0 2px 4px rgba(76, 175, 80, 0.3);
+}
+
+.menu-item.veg .qty-btn:hover {
+    background: #388e3c;
+    box-shadow: 0 3px 6px rgba(56, 142, 60, 0.4);
+}
+
+.menu-item.veg .total-price {
+    color: #4caf50;
+}
+
+.menu-item.veg .order-btn {
+    background: #4caf50;
+    box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
+}
+
+.menu-item.veg .order-btn:hover {
+    background: #388e3c;
+    box-shadow: 0 4px 8px rgba(56, 142, 60, 0.4);
+}
+
+.menu-item.nonveg {
+    border-color: #f44336;
+    box-shadow: 0 2px 6px rgba(244, 67, 54, 0.2);
+}
+
+.menu-item.nonveg .price {
+    color: #c62828;
+}
+
+.menu-item.nonveg .qty-btn {
+    background: #f44336;
+    box-shadow: 0 2px 4px rgba(244, 67, 54, 0.3);
+}
+
+.menu-item.nonveg .qty-btn:hover {
+    background: #d32f2f;
+    box-shadow: 0 3px 6px rgba(211, 47, 47, 0.4);
+}
+
+.menu-item.nonveg .total-price {
+    color: #f44336;
+}
+
+.menu-item.nonveg .order-btn {
+    background: #f44336;
+    box-shadow: 0 2px 5px rgba(244, 67, 54, 0.3);
+}
+
+.menu-item.nonveg .order-btn:hover {
+    background: #d32f2f;
+    box-shadow: 0 4px 8px rgba(211, 47, 47, 0.4);
 }

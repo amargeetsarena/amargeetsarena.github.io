@@ -32,10 +32,37 @@
   <style>
     /* Improve date picker appearance */
     input[type="date"]::-webkit-calendar-picker-indicator {
-      opacity: 1;
-      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%23ff7043" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>') no-repeat center;
+      display: none; /* Hide default calendar picker */
+    }
+
+    .date-input-wrapper {
+      display: flex;
+      align-items: center;
+      position: relative;
+    }
+
+    .calendar-btn {
+      background: #ff7043;
+      color: white;
+      border: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
       cursor: pointer;
-      padding-left: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 8px;
+      font-size: 14px;
+      transition: background-color 0.2s;
+    }
+
+    .calendar-btn:hover {
+      background: #e55a2b;
+    }
+
+    .calendar-btn i {
+      margin: 0;
     }
     
     /* Improve select dropdown appearance */
