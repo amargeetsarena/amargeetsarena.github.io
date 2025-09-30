@@ -410,6 +410,27 @@ function renderMenu(filter) {
         console.log('Opening WhatsApp URL:', waUrl);
         window.open(waUrl, '_blank');
         
+        // Reset form fields after successful order submission
+        quantityEl.textContent = '1';
+        priceEl.textContent = `Total: ₹${item.basePrice}`;
+        
+        // Reset order type to pickup (default)
+        const pickupRadio = itemElement.querySelector('input[name*="order-type"][value="pickup"]');
+        if (pickupRadio) pickupRadio.checked = true;
+        
+        // Reset date to tomorrow
+        dateInput.value = tomorrowStr;
+        
+        // Reset time selection
+        timeSelect.value = '';
+        
+        // Clear wing and flat inputs
+        if (wingSelect) wingSelect.value = '';
+        if (flatInput) flatInput.value = '';
+        
+        // Re-initialize delivery fields visibility
+        toggleDeliveryFields();
+        
       } catch (error) {
         console.error('Error processing order:', error);
         alert('There was an error processing your order. Please try again.');
@@ -420,12 +441,12 @@ function renderMenu(filter) {
 
 function filterMenu(cat) {
   // Remove active class from all buttons
-  document.querySelectorAll('nav button').forEach(btn => {
+  document.querySelectorAll('.categories-nav button').forEach(btn => {
     btn.classList.remove('active');
   });
 
   // Add active class to clicked button
-  const activeBtn = document.querySelector(`nav button[data-category="${cat}"]`);
+  const activeBtn = document.querySelector(`.categories-nav button[data-category="${cat}"]`);
   if (activeBtn) {
     activeBtn.classList.add('active');
   }
@@ -469,7 +490,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setView(savedView);
   
   // Set up category filter buttons
-  document.querySelectorAll('nav button').forEach(button => {
+  document.querySelectorAll('.categories-nav button').forEach(button => {
     button.addEventListener('click', (e) => {
       const category = e.currentTarget.getAttribute('data-category');
       filterMenu(category);

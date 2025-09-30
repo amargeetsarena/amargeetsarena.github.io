@@ -76,25 +76,29 @@
 <body>
   <header>
     <div class="header-top">
-      <h1 class="site-title">
-        <img src="images/logo.png" alt="Amargeet's Arena" class="site-logo">
-        <span>Amargeet's Arena</span>
-      </h1>
+      <div class="header-left">
+        <h1 class="site-title">
+          <img src="images/logo.png" alt="Amargeet's Arena" class="site-logo">
+          <span>Amargeet's Arena</span>
+        </h1>
+        <p class="site-subtitle">Only for GK Tropical Springs Apartment</p>
+      </div>
       <div class="view-toggle">
         <button id="grid-view-btn" class="view-btn active" title="Grid View">
           <i class="fas fa-th-large"></i>
-        </button>
         <button id="list-view-btn" class="view-btn" title="List View">
           <i class="fas fa-list"></i>
         </button>
       </div>
     </div>
-    <nav>
-      <button class="active" data-category="all"><i class="fas fa-pizza-slice"></i> All</button>
-      <button data-category="veg"><i class="fas fa-leaf"></i> Veg</button>
-      <button data-category="nonveg"><i class="fas fa-drumstick-bite"></i> Non-Veg</button>
-      <button data-category="withoutoniongarlic"><i class="fas fa-bread-slice"></i> No Onion/Garlic</button>
   </header>
+  
+  <nav class="categories-nav">
+    <button class="active" data-category="all"><i class="fas fa-pizza-slice"></i> All</button>
+    <button data-category="veg"><i class="fas fa-leaf"></i> Veg</button>
+    <button data-category="nonveg"><i class="fas fa-drumstick-bite"></i> Non-Veg</button>
+    <button data-category="withoutoniongarlic"><i class="fas fa-bread-slice"></i> No Onion/Garlic</button>
+  </nav>
   <main>
     <div id="menu-container"></div>
   </main>

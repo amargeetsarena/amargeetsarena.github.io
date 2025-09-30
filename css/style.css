@@ -12,7 +12,7 @@ header {
     align-items: center;
     gap: 12px;
     margin: 0;
-    font-size: 1.6em;
+    font-size: 1.4em;
     font-weight: 600;
     color: white;
     text-decoration: none;
@@ -24,14 +24,28 @@ header {
     align-items: center;
 }
 
+.site-subtitle {
+    margin: 0.25em 0 0 0;
+    font-size: 0.9em;
+    color: rgba(255, 255, 255, 0.8);
+    font-weight: 400;
+    font-style: italic;
+}
+
 .site-logo {
-    height: 44px;
-    width: 44px;
+    height: 36px;
+    width: 36px;
     border-radius: 50%;
     border: 2px solid rgba(255,255,255,0.9);
     box-shadow: 0 2px 6px rgba(0,0,0,0.15);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     object-fit: cover;
+}
+
+.header-left {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .header-top {
@@ -40,7 +54,7 @@ header {
     align-items: center;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 1em;
+    padding: 0.5em;
 }
 
 /* Footer Styles */
@@ -62,11 +76,11 @@ header {
 }
 
 .footer-section {
-    text-align: center; /* Center all footer section content */
-    width: 100%; /* Ensure full width */
+    text-align: center;
+    width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center; /* Center flex items */
+    align-items: center;
 }
 
 .footer-section h3, .footer-section h4 {
@@ -121,18 +135,22 @@ header {
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .site-title {
-        font-size: 1.3em;
+        font-size: 1.2em;
+    }
+    
+    .site-subtitle {
+        font-size: 0.8em;
     }
     
     .site-logo {
-        height: 36px;
-        width: 36px;
+        height: 32px;
+        width: 32px;
     }
     
     .footer-content {
         grid-template-columns: 1fr;
         text-align: center;
-        align-items: center; /* Center items on mobile */
+        align-items: center;
     }
     
     .social-links {
@@ -169,12 +187,12 @@ header {
     color: #ff7043;
 }
 /* Navigation */
-header nav {
+.categories-nav {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   gap: 12px;
-  padding: 15px 10px;
+  padding: 12px 10px;
   background: #f8f8f8;
   border-bottom: 1px solid #eee;
   position: sticky;
@@ -183,7 +201,7 @@ header nav {
   box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-nav button {
+.categories-nav button {
   margin: 0;
   padding: 10px 20px;
   cursor: pointer;
@@ -206,52 +224,52 @@ nav button i {
   font-size: 1.1em;
 }
 
-nav button:hover {
+.categories-nav button:hover {
   background: #ff7043;
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(255, 112, 67, 0.3);
 }
 
-nav button.active {
+.categories-nav button.active {
   background: #ff7043;
   color: white;
   box-shadow: 0 4px 8px rgba(255, 112, 67, 0.3);
 }
 
 /* Category Button Theme Styles */
-nav button[data-category="veg"] {
+.categories-nav button[data-category="veg"] {
   background: #4caf50;
   color: white;
   box-shadow: 0 2px 5px rgba(76, 175, 80, 0.3);
 }
 
-nav button[data-category="veg"]:hover,
-nav button[data-category="veg"].active {
+.categories-nav button[data-category="veg"]:hover,
+.categories-nav button[data-category="veg"].active {
   background: #388e3c;
   box-shadow: 0 4px 8px rgba(56, 142, 60, 0.4);
 }
 
-nav button[data-category="nonveg"] {
+.categories-nav button[data-category="nonveg"] {
   background: #f44336;
   color: white;
   box-shadow: 0 2px 5px rgba(244, 67, 54, 0.3);
 }
 
-nav button[data-category="nonveg"]:hover,
-nav button[data-category="nonveg"].active {
+.categories-nav button[data-category="nonveg"]:hover,
+.categories-nav button[data-category="nonveg"].active {
   background: #d32f2f;
   box-shadow: 0 4px 8px rgba(211, 47, 47, 0.4);
 }
 
 /* Responsive adjustments for navigation */
 @media (max-width: 600px) {
-  header nav {
+  .categories-nav {
     padding: 10px 5px;
     gap: 6px;
   }
   
-  nav button {
+  .categories-nav button {
     padding: 8px 15px;
     font-size: 0.85em;
     min-width: auto;
@@ -259,7 +277,7 @@ nav button[data-category="nonveg"].active {
     white-space: nowrap;
   }
   
-  nav button i {
+  .categories-nav button i {
     display: none;
   }
 }
