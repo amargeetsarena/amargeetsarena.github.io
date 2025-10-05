@@ -6,7 +6,9 @@ const menuItems = [
     desc: "Delicious eggless chocolate cake, perfect for any occasion.",
     price: "₹200",
     qty: "Half kg",
-    basePrice: 200
+    basePrice: 200,
+    enabled: false,
+    deliveryType: "both" // Can be 'pickup', 'delivery', or 'both'
   },
   {
     name: "Maggi Pakoda",
@@ -15,7 +17,9 @@ const menuItems = [
     desc: "Crispy Maggi noodles fried into delicious pakoda pieces.",
     price: "₹100",
     qty: "10 pieces",
-    basePrice: 100
+    basePrice: 100,
+    enabled: false,
+    deliveryType: "both"
   },
   {
     name: "Cheesy Chicken Zingy Parcel",
@@ -24,7 +28,20 @@ const menuItems = [
     desc: "Spicy and cheesy chicken parcels with zingy flavors.",
     price: "₹200",
     qty: "4 pieces",
-    basePrice: 200
+    basePrice: 200,
+    enabled: false,
+    deliveryType: "delivery" // Best for delivery
+  },
+  {
+    name: "Haldi Patra Pitha",
+    image: "images/pitha.jpeg",
+    category: "veg",
+    desc: "Traditional Odia sweet dumplings made within turmeric leaves. Made with a delicious batter of rice flour, sabudana, urad dal, poha, and filled with sweet coconut jaggery stuffing.",
+    price: "₹150",
+    qty: "6 pieces",
+    basePrice: 150,
+    enabled: true,
+    deliveryType: "pickup" // Best served fresh
   }
 ];
 
@@ -46,7 +63,16 @@ function setupOrderButton(item, quantityElement, dateElement, timeElement, order
   const totalPrice = item.basePrice * quantity;
   const orderDate = dateElement ? dateElement.value : 'ASAP';
   const orderTime = timeElement ? timeElement.value : '';
-  const orderType = orderTypeElement ? orderTypeElement.value : 'delivery';
+  
+  // Set default order type based on item's deliveryType
+  let defaultOrderType = 'delivery';
+  if (item.deliveryType === 'pickup') {
+    defaultOrderType = 'pickup';
+  } else if (item.deliveryType === 'delivery') {
+    defaultOrderType = 'delivery';
+  }
+  
+  const orderType = orderTypeElement ? orderTypeElement.value : defaultOrderType;
   const wing = wingElement ? wingElement.value : '';
   const flat = flatElement ? flatElement.value : '';
   
@@ -72,15 +98,23 @@ function renderMenu(filter) {
   if (!container) return;
   
   container.innerHTML = '';
-  const items = menuItems.filter(
-    item => filter === "all" || item.category === filter
-  );
   
-  if (items.length === 0) {
-    container.innerHTML = '<div class="no-items">No items found in this category.</div>';
+  // Filter items based on category and enabled status
+  const filteredItems = menuItems.filter(item => {
+    const matchesCategory = filter === "all" || item.category === filter;
+    return matchesCategory && item.enabled !== false;
+  });
+  
+  if (filteredItems.length === 0) {
+    container.innerHTML = `
+      <div class="no-items">
+        <i class="fas fa-utensils-slash"></i>
+        <p>No menu items available in this category.</p>
+      </div>
+    `;
     return;
   }
-  items.forEach(item => {
+  filteredItems.forEach(item => {
     const itemElement = document.createElement('div');
     itemElement.className = `menu-item ${item.category}`;
     
@@ -117,13 +151,29 @@ function renderMenu(filter) {
             <label><i class="fas fa-truck"></i> Order Type</label>
             <div class="pickup-delivery-options">
               <label class="radio-label">
-                <input type="radio" name="order-type-${item.name.replace(/\s+/g, '-').toLowerCase()}" value="pickup" class="order-type" data-item="${item.name}" required checked>
-                <span>Pickup</span>
+                <input type="radio" 
+                       name="order-type-${item.name.replace(/\s+/g, '-').toLowerCase()}" 
+                       value="pickup" 
+                       class="order-type" 
+                       data-item="${item.name}" 
+                       required 
+                       ${item.deliveryType === 'pickup' ? 'checked' : ''}
+                       ${item.deliveryType === 'pickup' ? 'onclick="return false;" style="cursor: not-allowed;"' : ''}>
+                <span>Pickup${item.deliveryType === 'pickup' ? ' Only' : ''}</span>
               </label>
+              ${item.deliveryType !== 'pickup' ? `
               <label class="radio-label">
-                <input type="radio" name="order-type-${item.name.replace(/\s+/g, '-').toLowerCase()}" value="delivery" class="order-type" data-item="${item.name}" required>
-                <span>Delivery</span>
+                <input type="radio" 
+                       name="order-type-${item.name.replace(/\s+/g, '-').toLowerCase()}" 
+                       value="delivery" 
+                       class="order-type" 
+                       data-item="${item.name}" 
+                       ${item.deliveryType === 'delivery' ? 'checked' : ''}
+                       ${item.deliveryType === 'delivery' ? 'onclick="return false;" style="cursor: not-allowed;"' : ''}
+                       required>
+                <span>Delivery${item.deliveryType === 'delivery' ? ' Only' : ''}</span>
               </label>
+              ` : ''}
             </div>
           </div>
           
