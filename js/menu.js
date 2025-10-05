@@ -35,7 +35,7 @@ const menuItems = [
   {
     name: "Haldi Patra Pitha",
     image: "images/pitha.jpeg",
-    category: "veg",
+    category: ["veg", "withoutoniongarlic"],
     desc: "Traditional Odia sweet dumplings made within turmeric leaves. Made with a delicious batter of rice flour, sabudana, urad dal, poha, and filled with sweet coconut jaggery stuffing.",
     price: "₹150",
     qty: "6 pieces",
@@ -101,7 +101,9 @@ function renderMenu(filter) {
   
   // Filter items based on category and enabled status
   const filteredItems = menuItems.filter(item => {
-    const matchesCategory = filter === "all" || item.category === filter;
+    const isArray = Array.isArray(item.category);
+    const matchesCategory = filter === "all" || 
+                         (isArray ? item.category.includes(filter) : item.category === filter);
     return matchesCategory && item.enabled !== false;
   });
   
