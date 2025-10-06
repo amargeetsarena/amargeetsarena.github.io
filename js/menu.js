@@ -2,12 +2,12 @@ const menuItems = [
   {
     name: "Chocolate Cake",
     image: "images/chocolatecake.png",
-    category: "veg",
-    desc: "Delicious eggless chocolate cake, perfect for any occasion.",
+    category: ["veg", "withoutoniongarlic"],
+    desc: "Delicious eggless chocolate cake, perfect for any occasion. No Onion No Garlic.",
     price: "₹200",
     qty: "Half kg",
     basePrice: 200,
-    enabled: false,
+    enabled: true,
     deliveryType: "both" // Can be 'pickup', 'delivery', or 'both'
   },
   {
@@ -40,7 +40,7 @@ const menuItems = [
     price: "₹150",
     qty: "6 pieces",
     basePrice: 150,
-    enabled: true,
+    enabled: false,
     deliveryType: "pickup" // Best served fresh
   }
 ];
@@ -152,30 +152,33 @@ function renderMenu(filter) {
           <div class="form-group pickup-delivery-group">
             <label><i class="fas fa-truck"></i> Order Type</label>
             <div class="pickup-delivery-options">
+              <!-- Always show Pickup option, but disable if deliveryType is 'delivery' -->
               <label class="radio-label">
                 <input type="radio" 
                        name="order-type-${item.name.replace(/\s+/g, '-').toLowerCase()}" 
                        value="pickup" 
                        class="order-type" 
                        data-item="${item.name}" 
-                       required 
+                       ${item.deliveryType === 'pickup' || item.deliveryType === 'both' ? '' : 'disabled'}
+                       ${item.deliveryType === 'delivery' ? '' : 'required'}
                        ${item.deliveryType === 'pickup' ? 'checked' : ''}
                        ${item.deliveryType === 'pickup' ? 'onclick="return false;" style="cursor: not-allowed;"' : ''}>
                 <span>Pickup${item.deliveryType === 'pickup' ? ' Only' : ''}</span>
               </label>
-              ${item.deliveryType !== 'pickup' ? `
+              
+              <!-- Always show Delivery option, but disable if deliveryType is 'pickup' -->
               <label class="radio-label">
                 <input type="radio" 
                        name="order-type-${item.name.replace(/\s+/g, '-').toLowerCase()}" 
                        value="delivery" 
                        class="order-type" 
                        data-item="${item.name}" 
+                       ${item.deliveryType === 'delivery' || item.deliveryType === 'both' ? '' : 'disabled'}
+                       ${item.deliveryType === 'pickup' ? '' : 'required'}
                        ${item.deliveryType === 'delivery' ? 'checked' : ''}
-                       ${item.deliveryType === 'delivery' ? 'onclick="return false;" style="cursor: not-allowed;"' : ''}
-                       required>
+                       ${item.deliveryType === 'delivery' ? 'onclick="return false;" style="cursor: not-allowed;"' : ''}>
                 <span>Delivery${item.deliveryType === 'delivery' ? ' Only' : ''}</span>
               </label>
-              ` : ''}
             </div>
           </div>
           
@@ -276,35 +279,37 @@ function renderMenu(filter) {
     
     // Add event listeners for pickup/delivery toggle
     const orderTypeRadios = itemElement.querySelectorAll('.order-type');
+    
+    // Add change event listeners to all order type radio buttons
+    orderTypeRadios.forEach(radio => {
+      radio.addEventListener('change', toggleDeliveryFields);
+    });
+    
     const wingGroup = itemElement.querySelector('.delivery-only');
     const flatGroup = itemElement.querySelector('.delivery-only');
     
     function toggleDeliveryFields() {
-      const selectedOrderType = itemElement.querySelector('.order-type:checked').value;
-      const deliveryOnlyFields = itemElement.querySelectorAll('.delivery-only');
-      const wingInput = itemElement.querySelector('.delivery-wing');
-      const flatInput = itemElement.querySelector('.delivery-flat');
-      
-      if (selectedOrderType === 'pickup') {
+      try {
+        const selectedOrderType = itemElement.querySelector('.order-type:checked');
+        if (!selectedOrderType) return;
+        
+        const deliveryOnlyFields = itemElement.querySelectorAll('.delivery-only');
+        const wingInput = itemElement.querySelector('.delivery-wing');
+        const flatInput = itemElement.querySelector('.delivery-flat');
+        
+        const isPickup = selectedOrderType.value === 'pickup';
+        
         deliveryOnlyFields.forEach(field => {
-          field.style.display = 'none';
+          if (field) field.style.display = isPickup ? 'none' : 'block';
         });
-        // Remove required attribute for delivery fields
-        if (wingInput) wingInput.required = false;
-        if (flatInput) flatInput.required = false;
-      } else {
-        deliveryOnlyFields.forEach(field => {
-          field.style.display = 'block';
-        });
-        // Add required attribute for delivery fields
-        if (wingInput) wingInput.required = true;
-        if (flatInput) flatInput.required = true;
+        
+        // Update required attributes for delivery fields
+        if (wingInput) wingInput.required = !isPickup;
+        if (flatInput) flatInput.required = !isPickup;
+      } catch (error) {
+        console.error('Error in toggleDeliveryFields:', error);
       }
     }
-    
-    orderTypeRadios.forEach(radio => {
-      radio.addEventListener('change', toggleDeliveryFields);
-    });
     
     // Initialize delivery fields visibility
     toggleDeliveryFields();
