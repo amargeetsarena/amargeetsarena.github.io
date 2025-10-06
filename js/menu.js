@@ -347,18 +347,17 @@ function renderMenu(filter) {
       const currentHour = now.getHours();
       const isToday = selectedDate === todayStr;
       
+      // Define all possible time slots (removed late night option)
       const allSlots = [
-        { value: "Morning (9 AM - 12 PM)", startHour: 9, endHour: 12 },
-        { value: "Afternoon (12 PM - 3 PM)", startHour: 12, endHour: 15 },
-        { value: "Evening (3 PM - 6 PM)", startHour: 15, endHour: 18 },
-        { value: "Night (7 PM - 10 PM)", startHour: 19, endHour: 22 },
-        { value: "Late Night (10 PM - 12 AM)", startHour: 22, endHour: 24 }
+        { value: 'Morning (9 AM - 12 PM)', hour: 9, minute: 0, endHour: 12, endMinute: 0 },
+        { value: 'Afternoon (12 PM - 4 PM)', hour: 12, minute: 0, endHour: 16, endMinute: 0 },
+        { value: 'Evening (4 PM - 8 PM)', hour: 16, minute: 0, endHour: 20, endMinute: 0 }
       ];
       
       let availableSlots;
       if (isToday) {
-        // For today, only show slots that haven't started yet
-        availableSlots = allSlots.filter(slot => currentHour < slot.startHour);
+        // For today, only show slots that haven't ended yet
+        availableSlots = allSlots.filter(slot => currentHour < slot.endHour);
       } else {
         // For future dates, show all slots
         availableSlots = allSlots;
