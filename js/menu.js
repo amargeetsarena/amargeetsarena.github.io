@@ -12,13 +12,13 @@ const menuItems = [
   },
   {
     name: "Maggi Pakoda",
-    image: "images/maggipakoda.png",
+    image: "images/maggipakoda.jpg",
     category: "veg",
     desc: "Crispy Maggi noodles fried into delicious pakoda pieces.",
     price: "₹100",
     qty: "10 pieces",
     basePrice: 100,
-    enabled: false,
+    enabled: true,
     deliveryType: "both"
   },
   {
