@@ -1,4 +1,5 @@
 const menuItems = [
+  // Vacation Notice: All items are currently unavailable
   {
     name: "Chocolate Cake",
     image: "images/chocolatecake.png",
@@ -7,8 +8,8 @@ const menuItems = [
     price: "₹200",
     qty: "Half kg",
     basePrice: 200,
-    enabled: true,
-    deliveryType: "both" // Can be 'pickup', 'delivery', or 'both'
+    enabled: false,
+    deliveryType: "both"
   },
   {
     name: "Maggi Pakoda",
@@ -18,7 +19,7 @@ const menuItems = [
     price: "₹100",
     qty: "10 pieces",
     basePrice: 100,
-    enabled: true,
+    enabled: false,
     deliveryType: "both"
   },
   {
@@ -30,7 +31,7 @@ const menuItems = [
     qty: "4 pieces",
     basePrice: 200,
     enabled: false,
-    deliveryType: "delivery" // Best for delivery
+    deliveryType: "delivery"
   },
   {
     name: "Haldi Patra Pitha",
@@ -41,7 +42,7 @@ const menuItems = [
     qty: "6 pieces",
     basePrice: 150,
     enabled: false,
-    deliveryType: "pickup" // Best served fresh
+    deliveryType: "pickup"
   }
 ];
 
@@ -109,9 +110,17 @@ function renderMenu(filter) {
   
   if (filteredItems.length === 0) {
     container.innerHTML = `
-      <div class="no-items">
-        <i class="fas fa-utensils-slash"></i>
-        <p>No menu items available in this category.</p>
+      <div class="no-items" style="text-align: center; padding: 2rem; background: #fff8f5; border-radius: 8px; margin: 2rem 0;">
+        <div style="font-size: 3rem; color: #ff7043; margin-bottom: 1rem;">
+          <i class="fas fa-umbrella-beach"></i>
+        </div>
+        <h2 style="color: #e64a19; margin-bottom: 1rem;">We're on Vacation!</h2>
+        <p style="font-size: 1.1rem; color: #5d4037; margin-bottom: 1.5rem;">
+          We're currently on vacation and not taking any orders at the moment.
+        </p>
+        <p style="color: #5d4037;">
+          We'll be back soon with more delicious treats! Thank you for your understanding.
+        </p>
       </div>
     `;
     return;
