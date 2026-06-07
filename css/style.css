@@ -1424,7 +1424,7 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
   position: fixed;
   top: 0;
   right: 0;
-  width: min(400px, 94vw);
+  width: min(300px, 84vw);
   height: 100vh;
   background: #fff;
   box-shadow: -20px 0 50px rgba(0, 0, 0, 0.15);
@@ -1433,6 +1433,19 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
   transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   flex-direction: column;
+}
+
+@media (min-width: 840px) {
+  .cart-panel {
+    width: min(300px, 24vw);
+  }
+
+  body.cart-open header,
+  body.cart-open .categories-nav,
+  body.cart-open main {
+    width: calc(100vw - min(300px, 24vw));
+    max-width: calc(100vw - min(300px, 24vw));
+  }
 }
 
 .cart-panel.open {

@@ -1,61 +1,8 @@
 [
     {
-        "id": "suji_rava_cake",
-        "name": "Suji (Rava) Cake",
-        "description": "A Suji Cake is a light, fluffy Indian-style cake made primarily from suji (semolina/rava) instead of traditional all-purpose flour. This moist sponge cake has a slightly grainy yet tender texture that melts in your mouth, with a subtle nutty flavor from the semolina.",
-        "image": "images/sujicake_20260607192714.jpeg",
-        "price": 250,
-        "unitLabel": "500 - 600 g",
-        "foodType": "veg",
-        "tags": [
-            "snack",
-            "dessert"
-        ],
-        "enabled": true,
-        "visible": true,
-        "deliveryType": "pickup",
-        "sortOrder": 1780853328079,
-        "createdAt": "2026-06-07T17:28:48+00:00",
-        "updatedAt": "2026-06-07T17:28:48+00:00"
-    },
-    {
-        "id": "poda_pitha",
-        "name": "Poda Pitha",
-        "description": "Poda Pitha is a classic Odia delicacy, known for its golden-brown crust, soft interior, and irresistible aroma of jaggery, coconut, and cardamom. Traditionally prepared during Raja and other festive occasions, this slow-baked rice cake carries the warm, nostalgic flavors of Odisha in every bite.",
-        "image": "images/podapitha_20260607192454.jpeg",
-        "price": 300,
-        "unitLabel": "500 - 600 gm",
-        "foodType": "veg",
-        "tags": [],
-        "enabled": true,
-        "visible": true,
-        "deliveryType": "pickup",
-        "sortOrder": 1780853148372,
-        "createdAt": "2026-06-07T17:25:48+00:00",
-        "updatedAt": "2026-06-07T17:25:48+00:00"
-    },
-    {
-        "id": "maggi_pakoda",
-        "name": "Maggi Pakoda",
-        "description": "Crispy Maggi noodles fried into delicious pakoda pieces.",
-        "image": "images/maggipakoda.jpg",
-        "price": 105,
-        "unitLabel": "10 pieces",
-        "foodType": "veg",
-        "tags": [
-            "snack"
-        ],
-        "enabled": true,
-        "visible": true,
-        "deliveryType": "pickup",
-        "sortOrder": 1780852830208,
-        "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2026-06-07T17:20:30+00:00"
-    },
-    {
         "id": "chocolate_cake",
         "name": "Chocolate Cake",
-        "description": "Delicious eggless chocolate cake, perfect for any occasion. No Onion No Garlic.",
+        "description": "Available to order: Delicious eggless chocolate cake, perfect for any occasion. No Onion No Garlic.",
         "image": "images/chocolatecake.png",
         "price": 250,
         "unitLabel": "500 - 600 gm",
@@ -67,9 +14,62 @@
         "enabled": true,
         "visible": true,
         "deliveryType": "pickup",
-        "sortOrder": 1780852738614,
+        "sortOrder": 1780853882918,
         "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2026-06-07T17:18:58+00:00"
+        "updatedAt": "2026-06-07T17:38:02+00:00"
+    },
+    {
+        "id": "maggi_pakoda",
+        "name": "Maggi Pakoda",
+        "description": "Available to order: Crispy Maggi noodles fried into delicious pakoda pieces.",
+        "image": "images/maggipakoda.jpg",
+        "price": 105,
+        "unitLabel": "10 pieces",
+        "foodType": "veg",
+        "tags": [
+            "snack"
+        ],
+        "enabled": true,
+        "visible": true,
+        "deliveryType": "pickup",
+        "sortOrder": 1780853870967,
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2026-06-07T17:37:50+00:00"
+    },
+    {
+        "id": "poda_pitha",
+        "name": "Poda Pitha",
+        "description": "Available to order: Poda Pitha is a traditional Odia baked rice cake with a caramelized, slightly crispy exterior and soft, fluffy interior, made from fermented rice batter, jaggery or sugar, and coconut, offering a rich, sweet flavor with hints of cardamom.",
+        "image": "images/podapitha_20260607192454.jpeg",
+        "price": 300,
+        "unitLabel": "500 - 600 gm",
+        "foodType": "veg",
+        "tags": [],
+        "enabled": true,
+        "visible": true,
+        "deliveryType": "pickup",
+        "sortOrder": 1780853839839,
+        "createdAt": "2026-06-07T17:25:48+00:00",
+        "updatedAt": "2026-06-07T17:37:19+00:00"
+    },
+    {
+        "id": "suji_rava_cake",
+        "name": "Suji (Rava) Cake",
+        "description": "Available to order: Suji Cake is a light, fluffy, and moist Indian semolina cake with a delicate nutty flavor and cardamom aroma, perfect for quick tea-time enjoyment.",
+        "image": "images/sujicake_20260607192714.jpeg",
+        "price": 250,
+        "unitLabel": "500 - 600 g",
+        "foodType": "veg",
+        "tags": [
+            "snack",
+            "dessert"
+        ],
+        "enabled": true,
+        "visible": true,
+        "deliveryType": "pickup",
+        "sortOrder": 1780853816773,
+        "createdAt": "2026-06-07T17:28:48+00:00",
+        "updatedAt": "2026-06-07T17:36:56+00:00"
     },
     {
         "id": "haldi_patra_pitha",
