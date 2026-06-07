@@ -3,6 +3,54 @@ let siteState = { openForOrders: true };
 
 const whatsappNumber = "917899417495";
 
+/**
+ * Share a menu item via WhatsApp.
+ * On PHP (XAMPP) the share.php page serves proper OG tags so WhatsApp
+ * will show the item image + details as a rich thumbnail.
+ * On GitHub Pages (static) we fall back to a descriptive text share.
+ */
+function shareItem(item) {
+  const isPhp = window.location.pathname.endsWith('.php') ||
+                window.location.hostname === 'localhost' ||
+                window.location.hostname === '127.0.0.1';
+
+  let shareUrl;
+  let waText;
+
+  if (isPhp) {
+    // PHP server — use share.php for rich OG thumbnail
+    const base = window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '');
+    shareUrl = `${base}/share.php?item=${encodeURIComponent(item.id)}`;
+    waText = encodeURIComponent(`Check out *${item.name}* from Amargeet's Arena!\n\n${shareUrl}`);
+  } else {
+    // Static / GitHub Pages — text-only share with site link
+    const base = window.location.origin + (window.location.pathname.replace(/\/[^/]*$/, '') || '');
+    shareUrl = base + '/';
+    const desc = item.desc ? `\n${item.desc}` : '';
+    waText = encodeURIComponent(
+      `🍽️ *${item.name}*${desc}\n` +
+      `💰 Price: ₹${item.basePrice}` + (item.qty ? ` (${item.qty})` : '') + `\n\n` +
+      `Order here: ${shareUrl}`
+    );
+  }
+
+  // Use Web Share API if available (shows native share sheet on mobile)
+  if (navigator.share) {
+    navigator.share({
+      title: `${item.name} — Amargeet's Arena`,
+      text: item.desc || 'Check out this item from Amargeet\'s Arena!',
+      url: isPhp
+        ? (window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '') + `/share.php?item=${encodeURIComponent(item.id)}`)
+        : window.location.origin + '/'
+    }).catch(() => {
+      // Fallback to WhatsApp if share is dismissed / not supported
+      window.open(`https://wa.me/?text=${waText}`, '_blank');
+    });
+  } else {
+    window.open(`https://wa.me/?text=${waText}`, '_blank');
+  }
+}
+
 function adaptItem(item) {
   const categories = [];
   if (item.foodType) categories.push(item.foodType);
@@ -166,7 +214,12 @@ function renderMenu(filter) {
     const flatId = `flat-${safeId}`;
 
     itemElement.innerHTML = `
-      <img src="${item.image}" alt="${item.name}" onerror="this.src='images/logo.png'">
+      <div class="menu-item__img-wrap">
+        <img src="${item.image}" alt="${item.name}" onerror="this.src='images/logo.png'">
+        <button type="button" class="menu-item__share-btn" data-item-id="${item.id}" title="Share this item" aria-label="Share ${item.name}">
+          <i class="fas fa-share-alt"></i>
+        </button>
+      </div>
       <div class="menu-item-content">
         <h2>${item.name}</h2>
         <div class="price-qty-row">
@@ -308,6 +361,15 @@ function renderMenu(filter) {
     }
 
     container.appendChild(itemElement);
+
+    // Share button
+    const shareBtn = itemElement.querySelector('.menu-item__share-btn');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        shareItem(item);
+      });
+    }
 
     itemElement.addEventListener('click', (e) => {
     if (e.target.closest('form') || e.target.closest('button') || e.target.closest('input') || e.target.closest('select')) {
