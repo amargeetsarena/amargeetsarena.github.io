@@ -787,10 +787,6 @@ function openItemModal(item) {
           <div class="modal-description">${item.desc}</div>
           ${item.enabled === false ? '<div class="menu-item__disabled-banner"><i class="fas fa-lock"></i> Ordering disabled for this item</div>' : ''}
           <div class="modal-details">
-            <div>
-              <div class="modal-price">${item.price}</div>
-              <div class="modal-quantity">${item.qty}</div>
-            </div>
             <button class="order-btn" ${item.enabled === false ? 'disabled aria-disabled="true"' : ''} onclick="${item.enabled === false ? 'return false;' : `closeModalAndScroll('${item.name}')`}">
               <i class="fab fa-whatsapp"></i> Order Now
             </button>

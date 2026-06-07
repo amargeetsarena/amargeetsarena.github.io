@@ -997,8 +997,8 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
 
 .modal-details {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   gap: 12px;
   padding: 14px 16px;
   background: var(--surface-2);
@@ -1006,16 +1006,10 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
   border: 1px solid var(--border);
 }
 
-.modal-price {
-  font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--brand);
-}
-
 .modal-quantity {
   font-size: .85rem;
   color: var(--text-secondary);
-  margin-top: 2px;
+  font-weight: 600;
 }
 
 /* ── List View ───────────────────────────────────────────────── */
