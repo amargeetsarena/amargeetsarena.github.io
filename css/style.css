@@ -1312,8 +1312,8 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
   }
 }
 
-/* ── Mobile fixes (< 400px) ──────────────────────────────────── */
-@media (max-width: 400px) {
+/* ── Mobile fixes (< 600px) ──────────────────────────────────── */
+@media (max-width: 600px) {
   .categories-nav { gap: 6px; padding: 10px 8px; }
   .categories-nav button { padding: 6px 12px; font-size: .78rem; }
   .categories-nav button i { display: none; }
@@ -1342,7 +1342,9 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
   #menu-container.list-view .menu-item-content {
     grid-template-columns: 1fr auto;
   }
+}
 
+@media (max-width: 600px) and (pointer: coarse) {
   .pickup-delivery-options { flex-direction: column; gap: 6px; }
 
   .radio-label { min-height: 44px; }
