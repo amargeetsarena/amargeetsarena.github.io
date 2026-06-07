@@ -49,7 +49,7 @@ if ($found) {
                      ($price ? " | $price" : '') .
                      ($unit ? " ($unit)" : '');
     $ogUrl         = $siteBase . '/?item=' . urlencode($itemId);
-    $redirectUrl   = $siteBase . '/';
+    $redirectUrl   = $siteBase . '/?item=' . urlencode($itemId);
 
     // Resolve image URL — if it starts with 'images/', make it absolute
     $rawImage = $found['image'] ?? '';

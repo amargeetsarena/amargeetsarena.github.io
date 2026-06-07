@@ -23,9 +23,9 @@ function shareItem(item) {
     shareUrl = `${base}/share.php?item=${encodeURIComponent(item.id)}`;
     waText = encodeURIComponent(`Check out *${item.name}* from Amargeet's Arena!\n\n${shareUrl}`);
   } else {
-    // Static / GitHub Pages — text-only share with site link
+    // Static / GitHub Pages — deep link back to the item in the menu
     const base = window.location.origin + (window.location.pathname.replace(/\/[^/]*$/, '') || '');
-    shareUrl = base + '/';
+    shareUrl = `${base}/?item=${encodeURIComponent(item.id)}`;
     const desc = item.desc ? `\n${item.desc}` : '';
     waText = encodeURIComponent(
       `🍽️ *${item.name}*${desc}\n` +
@@ -41,7 +41,7 @@ function shareItem(item) {
       text: item.desc || 'Check out this item from Amargeet\'s Arena!',
       url: isPhp
         ? (window.location.origin + window.location.pathname.replace(/\/[^/]*$/, '') + `/share.php?item=${encodeURIComponent(item.id)}`)
-        : window.location.origin + '/'
+        : `${window.location.origin}${window.location.pathname.replace(/\/[^/]*$/, '') || ''}/?item=${encodeURIComponent(item.id)}`
     }).catch(() => {
       // Fallback to WhatsApp if share is dismissed / not supported
       window.open(`https://wa.me/?text=${waText}`, '_blank');
@@ -105,6 +105,45 @@ async function loadSiteState() {
   }
 }
 window.loadSiteState = loadSiteState;
+
+function getItemIdFromUrl() {
+  try {
+    return new URL(window.location.href).searchParams.get('item');
+  } catch (error) {
+    return null;
+  }
+}
+
+function focusItemById(itemId) {
+  if (!itemId) return;
+
+  const item = menuItems.find(menuItem => String(menuItem.id) === String(itemId));
+  if (!item) return;
+
+  const category = Array.isArray(item.category) ? item.category[0] : item.category;
+  if (category && category !== 'all') {
+    renderMenu(category);
+    const activeBtn = document.querySelector(`.categories-nav button[data-category="${category}"]`);
+    if (activeBtn) {
+      document.querySelectorAll('.categories-nav button').forEach(btn => btn.classList.remove('active'));
+      activeBtn.classList.add('active');
+    }
+  } else {
+    renderMenu('all');
+  }
+
+  window.requestAnimationFrame(() => {
+    const selector = `[data-item-id="${String(itemId).replace(/"/g, '\\"')}"]`;
+    const itemElement = document.querySelector(selector);
+    if (itemElement) {
+      itemElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      itemElement.style.boxShadow = '0 0 20px rgba(255, 112, 67, 0.6)';
+      setTimeout(() => {
+        itemElement.style.boxShadow = '';
+      }, 2000);
+    }
+  });
+}
 
 function updateQuantity(button, delta, item, quantityElement, priceElement) {
   let quantity = parseInt(quantityElement.textContent) || 1;
@@ -212,6 +251,7 @@ function renderMenu(filter) {
     const timeId = `delivery-time-${safeId}`;
     const wingId = `wing-${safeId}`;
     const flatId = `flat-${safeId}`;
+    itemElement.setAttribute('data-item-id', item.id);
 
     itemElement.innerHTML = `
       <div class="menu-item__img-wrap">
@@ -690,6 +730,11 @@ document.addEventListener('DOMContentLoaded', async function() {
   loadCart();
   renderCart();
   initCartControls();
+
+  const itemId = getItemIdFromUrl();
+  if (itemId) {
+    focusItemById(itemId);
+  }
 });
 
 function openItemModal(item) {
