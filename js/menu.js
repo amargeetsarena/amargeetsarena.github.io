@@ -3,6 +3,25 @@ let siteState = { openForOrders: true };
 
 const whatsappNumber = "917899417495";
 
+function formatIndianDate(dateValue) {
+  if (!dateValue) return 'ASAP';
+  const date = new Date(`${dateValue}T00:00:00`);
+  if (Number.isNaN(date.getTime())) return dateValue;
+
+  const day = date.getDate();
+  const month = date.toLocaleDateString('en-IN', {
+    month: 'long',
+    timeZone: 'Asia/Kolkata'
+  });
+  const year = String(date.getFullYear()).slice(-2);
+  const suffix = day % 10 === 1 && day % 100 !== 11 ? 'st'
+    : day % 10 === 2 && day % 100 !== 12 ? 'nd'
+    : day % 10 === 3 && day % 100 !== 13 ? 'rd'
+    : 'th';
+
+  return `${day}${suffix} ${month} ${year}`;
+}
+
 /**
  * Share a menu item via WhatsApp.
  * On PHP (XAMPP) the share.php page serves proper OG tags so WhatsApp
@@ -161,6 +180,7 @@ function setupOrderButton(item, quantityElement, dateElement, timeElement, order
   const totalPrice = item.basePrice * quantity;
   const orderDate = dateElement ? dateElement.value : 'ASAP';
   const orderTime = timeElement ? timeElement.value : '';
+  const formattedDate = formatIndianDate(orderDate);
 
   let defaultOrderType = 'delivery';
   if (item.deliveryType === 'pickup') {
@@ -178,10 +198,10 @@ function setupOrderButton(item, quantityElement, dateElement, timeElement, order
   message += `🔢 Quantity: ${quantity}\n`;
   message += `💰 Total Price: ₹${totalPrice}\n`;
   message += `📋 Order Type: ${orderType === 'pickup' ? 'Pickup' : 'Delivery'}\n`;
-  message += `📅 Date: ${orderDate}\n`;
+  message += `📅 Date: ${formattedDate}\n`;
   if (orderTime) message += `⏰ Time: ${orderTime}\n`;
   if (orderType === 'pickup') {
-    message += `📍 Pick up from: Wing 3, Flat 1010\n`;
+    message += `📍 Pick up from: W3-1010\n`;
   } else if (orderType === 'delivery') {
     if (wing) message += `🏢 Wing: ${wing}\n`;
     if (flat) message += `🏠 Flat: ${flat}\n`;
@@ -331,6 +351,7 @@ function renderMenu(filter) {
                 <i class="far fa-calendar-alt"></i>
               </button>
             </div>
+            <div class="delivery-date-display" aria-live="polite"></div>
           </div>
 
           <div class="form-group">
@@ -600,6 +621,17 @@ function renderMenu(filter) {
     const orderForm = itemElement.querySelector('.order-form');
     const wingSelect = itemElement.querySelector('.delivery-wing');
     const flatInput = itemElement.querySelector('.delivery-flat');
+    const dateDisplay = itemElement.querySelector('.delivery-date-display');
+
+    function updateDateDisplay() {
+      if (!dateDisplay || !dateInput) return;
+      dateDisplay.textContent = dateInput.value ? `Selected: ${formatIndianDate(dateInput.value)}` : '';
+    }
+
+    updateDateDisplay();
+    if (dateInput) {
+      dateInput.addEventListener('change', updateDateDisplay);
+    }
 
     orderForm.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -924,8 +956,8 @@ function renderCart() {
         const itemTotal = item.price * item.quantity;
         total += itemTotal;
         const detailsStr = item.orderType === 'pickup'
-          ? `Pickup · ${item.date} · ${item.time}`
-          : `Delivery · ${item.date} · ${item.time} · Wing ${item.wing} · Flat ${item.flat}`;
+          ? `Pickup · ${formatIndianDate(item.date)} · ${item.time}`
+          : `Delivery · ${formatIndianDate(item.date)} · ${item.time} · Wing ${item.wing} · Flat ${item.flat}`;
         return `
           <div class="cart-item" style="flex-wrap: wrap; gap: 8px 12px;">
             <img src="${item.image}" alt="${item.name}" onerror="this.src='images/logo.png'">
@@ -1006,9 +1038,9 @@ function initCartControls() {
         message += `${index + 1}. *${item.name}* (${item.qtyLabel})\n`;
         message += `   🔢 Qty: ${item.quantity} · 💰 Price: ₹${itemTotal}\n`;
         if (item.orderType === 'pickup') {
-          message += `   📋 Pickup (Date: ${item.date}, Time: ${item.time})\n`;
+          message += `   📋 Pickup (Date: ${formatIndianDate(item.date)}, Time: ${item.time}, Flat: W3-1010)\n`;
         } else {
-          message += `   📋 Delivery (Date: ${item.date}, Time: ${item.time}, Wing: ${item.wing}, Flat: ${item.flat})\n`;
+          message += `   📋 Delivery (Date: ${formatIndianDate(item.date)}, Time: ${item.time}, Wing: ${item.wing}, Flat: ${item.flat})\n`;
         }
       });
       message += `\n💵 *Grand Total: ₹${grandTotal}*\n`;
