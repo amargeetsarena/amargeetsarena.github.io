@@ -179,7 +179,7 @@
         </div>
       </div>
       <div class="admin-panel__body">
-        <div class="admin-panel__section">
+        <div class="admin-panel__section admin-card--items">
           <div class="admin-panel__listhead">
             <h3>Items</h3>
             <span>${filteredItems.length} shown</span>
@@ -235,7 +235,7 @@
             </div>
           </section>
 
-          <section class="admin-card">
+          <section class="admin-card admin-card--basics">
             <div class="admin-card__header">
               <div>
                 <h4>Basics</h4>
@@ -254,7 +254,7 @@
             </label>
           </section>
 
-          <section class="admin-card">
+          <section class="admin-card admin-card--pricing">
             <div class="admin-card__header">
               <div>
                 <h4>Pricing</h4>
@@ -293,7 +293,7 @@
           </div>
           </section>
 
-          <section class="admin-card">
+          <section class="admin-card admin-card--tags">
             <div class="admin-card__header">
               <div>
                 <h4>Tags</h4>
@@ -385,7 +385,6 @@
     const tagsInput = panel.querySelector('#admin-tags');
     const customTagsInput = panel.querySelector('#admin-custom-tags');
     const fileInput = panel.querySelector('#admin-image-file');
-    const browseButton = panel.querySelector('#admin-browse-image');
     const imageStatus = panel.querySelector('#admin-image-status');
     const imagePreview = panel.querySelector('.admin-image-preview');
     const addCustomTag = panel.querySelector('#admin-add-custom-tag');
@@ -405,8 +404,7 @@
       }
     }
 
-    if (browseButton && fileInput && imageInput && imageStatus) {
-      browseButton.addEventListener('click', () => fileInput.click());
+    if (fileInput && imageInput && imageStatus) {
       fileInput.addEventListener('change', async () => {
         const file = fileInput.files && fileInput.files[0];
         if (!file) return;
@@ -448,7 +446,7 @@
         const hiddenInput = panel.querySelector(groupName === 'foodType' ? '#admin-food-type' : '#admin-delivery-type');
         if (!hiddenInput) return;
         hiddenInput.value = value;
-        panel.querySelectorAll(`[data-pill-group="${groupName}"] .admin-pill`).forEach(el => {
+        panel.querySelectorAll(`[data-pill-group="${groupName}"]`).forEach(el => {
           el.classList.toggle('is-active', el.getAttribute('data-pill-value') === value);
         });
       });

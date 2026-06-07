@@ -288,6 +288,9 @@ function renderMenu(filter) {
           <button type="submit" class="order-btn" data-item="${item.name}" ${isOrderable ? '' : 'disabled aria-disabled="true"'}>
             <i class="fab fa-whatsapp"></i> Order Now
           </button>
+          <button type="button" class="add-to-cart-btn" data-item="${item.name}" ${isOrderable ? '' : 'disabled aria-disabled="true"'}>
+            <i class="fas fa-cart-plus"></i> Add to Cart
+          </button>
         </div>
         </form>
       </div>
@@ -325,6 +328,64 @@ function renderMenu(filter) {
     plusBtn.addEventListener('click', () => {
       updateQuantity(plusBtn, 1, item, quantityEl, priceEl);
     });
+
+    const addToCartBtn = itemElement.querySelector('.add-to-cart-btn');
+    if (addToCartBtn) {
+      addToCartBtn.addEventListener('click', () => {
+        if (item.enabled === false) {
+          alert('This item is currently not available for ordering.');
+          return;
+        }
+
+        if (orderForm && !orderForm.checkValidity()) {
+          orderForm.reportValidity();
+          return;
+        }
+
+        const selectedOrderType = itemElement.querySelector('.order-type:checked');
+        if (!selectedOrderType) {
+          alert('Please select pickup or delivery');
+          return;
+        }
+
+        if (dateInput && !dateInput.value) {
+          alert('Please select a delivery date');
+          dateInput.focus();
+          return;
+        }
+
+        if (timeSelect && !timeSelect.value) {
+          alert('Please select a delivery time');
+          timeSelect.focus();
+          return;
+        }
+
+        if (selectedOrderType.value === 'delivery') {
+          if (wingSelect && !wingSelect.value) {
+            alert('Please select your wing');
+            wingSelect.focus();
+            return;
+          }
+
+          if (flatInput && !flatInput.value) {
+            alert('Please enter your flat number');
+            flatInput.focus();
+            return;
+          }
+        }
+
+        const qty = parseInt(quantityEl.textContent) || 1;
+        
+        addToCart({
+          ...item,
+          orderType: selectedOrderType.value,
+          date: dateInput ? dateInput.value : '',
+          time: timeSelect ? timeSelect.value : '',
+          wing: (selectedOrderType.value === 'delivery' && wingSelect) ? wingSelect.value : '',
+          flat: (selectedOrderType.value === 'delivery' && flatInput) ? flatInput.value : ''
+        }, qty);
+      });
+    }
 
     const orderTypeRadios = itemElement.querySelectorAll('.order-type');
     orderTypeRadios.forEach(radio => {
@@ -563,6 +624,10 @@ document.addEventListener('DOMContentLoaded', async function() {
       filterMenu(category);
     });
   });
+
+  loadCart();
+  renderCart();
+  initCartControls();
 });
 
 function openItemModal(item) {
@@ -641,3 +706,213 @@ function closeModalAndScroll(itemName) {
   }
 }
 window.closeModalAndScroll = closeModalAndScroll;
+
+// ── Shopping Cart & Checkout ──────────────────────────────────
+let cart = [];
+
+function loadCart() {
+  try {
+    cart = JSON.parse(localStorage.getItem('cart') || '[]');
+    updateCartBadge();
+  } catch (error) {
+    console.error('Error loading cart:', error);
+    cart = [];
+  }
+}
+
+function saveCart() {
+  try {
+    localStorage.setItem('cart', JSON.stringify(cart));
+    updateCartBadge();
+    renderCart();
+  } catch (error) {
+    console.error('Error saving cart:', error);
+  }
+}
+
+function updateCartBadge() {
+  const badge = document.getElementById('cart-badge');
+  if (!badge) return;
+  const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+  if (count > 0) {
+    badge.textContent = count;
+    badge.style.display = 'block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function addToCart(item, quantity) {
+  const existingIndex = cart.findIndex(cartItem => 
+    cartItem.name === item.name &&
+    cartItem.orderType === item.orderType &&
+    cartItem.date === item.date &&
+    cartItem.time === item.time &&
+    cartItem.wing === item.wing &&
+    cartItem.flat === item.flat
+  );
+  if (existingIndex > -1) {
+    cart[existingIndex].quantity = Math.min(10, cart[existingIndex].quantity + quantity);
+  } else {
+    cart.push({
+      id: item.id,
+      name: item.name,
+      price: item.basePrice,
+      qtyLabel: item.qty,
+      image: item.image,
+      quantity: quantity,
+      orderType: item.orderType,
+      date: item.date,
+      time: item.time,
+      wing: item.wing,
+      flat: item.flat
+    });
+  }
+  saveCart();
+  
+  const panel = document.getElementById('cart-panel');
+  if (panel) panel.classList.add('open');
+}
+
+function updateCartQuantityByIndex(index, delta) {
+  if (index < 0 || index >= cart.length) return;
+  cart[index].quantity += delta;
+  if (cart[index].quantity < 1) {
+    cart.splice(index, 1);
+  } else if (cart[index].quantity > 10) {
+    cart[index].quantity = 10;
+  }
+  saveCart();
+}
+
+function removeFromCartByIndex(index) {
+  if (index < 0 || index >= cart.length) return;
+  cart.splice(index, 1);
+  saveCart();
+}
+
+function renderCart() {
+  const container = document.getElementById('cart-items-container');
+  const checkoutContainer = document.getElementById('cart-checkout-container');
+  const totalPriceEl = document.getElementById('cart-total-price');
+  if (!container || !checkoutContainer) return;
+
+  if (cart.length === 0) {
+    container.innerHTML = `
+      <div class="cart-empty">
+        <i class="fas fa-shopping-basket"></i>
+        <p>Your cart is empty.<br>Add some delicious items!</p>
+      </div>
+    `;
+    checkoutContainer.style.display = 'none';
+    return;
+  }
+
+  checkoutContainer.style.display = 'block';
+  let total = 0;
+
+  container.innerHTML = `
+    <div class="cart-items-list">
+      ${cart.map((item, index) => {
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        const detailsStr = item.orderType === 'pickup'
+          ? `Pickup · ${item.date} · ${item.time}`
+          : `Delivery · ${item.date} · ${item.time} · Wing ${item.wing} · Flat ${item.flat}`;
+        return `
+          <div class="cart-item" style="flex-wrap: wrap; gap: 8px 12px;">
+            <img src="${item.image}" alt="${item.name}" onerror="this.src='images/logo.png'">
+            <div class="cart-item__details" style="flex: 1; min-width: 150px;">
+              <div class="cart-item__name">${item.name}</div>
+              <div class="cart-item__price">₹${item.price} (${item.qtyLabel})</div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; line-height: 1.3;">${detailsStr}</div>
+            </div>
+            <div class="cart-item__qty-controls">
+              <button type="button" class="cart-item__qty-btn minus" data-index="${index}">−</button>
+              <span class="cart-item__qty">${item.quantity}</span>
+              <button type="button" class="cart-item__qty-btn plus" data-index="${index}">+</button>
+            </div>
+            <button type="button" class="cart-item__remove" data-index="${index}" aria-label="Remove item">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+
+  if (totalPriceEl) {
+    totalPriceEl.textContent = `₹${total}`;
+  }
+
+  container.querySelectorAll('.cart-item__qty-btn.minus').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const index = parseInt(btn.getAttribute('data-index'));
+      updateCartQuantityByIndex(index, -1);
+    });
+  });
+
+  container.querySelectorAll('.cart-item__qty-btn.plus').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const index = parseInt(btn.getAttribute('data-index'));
+      updateCartQuantityByIndex(index, 1);
+    });
+  });
+
+  container.querySelectorAll('.cart-item__remove').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const index = parseInt(btn.getAttribute('data-index'));
+      removeFromCartByIndex(index);
+    });
+  });
+}
+
+function initCartControls() {
+  const cartFab = document.getElementById('cart-fab');
+  const cartPanel = document.getElementById('cart-panel');
+  const cartCloseBtn = document.getElementById('cart-panel-close');
+  
+  if (cartFab && cartPanel) {
+    cartFab.addEventListener('click', () => {
+      cartPanel.classList.add('open');
+    });
+  }
+  
+  if (cartCloseBtn && cartPanel) {
+    cartCloseBtn.addEventListener('click', () => {
+      cartPanel.classList.remove('open');
+    });
+  }
+
+  const checkoutForm = document.getElementById('cart-checkout-form');
+
+  if (checkoutForm) {
+    checkoutForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      if (cart.length === 0) return;
+
+      let grandTotal = 0;
+      let message = `Hi! I want to order:\n\n`;
+      cart.forEach((item, index) => {
+        const itemTotal = item.price * item.quantity;
+        grandTotal += itemTotal;
+        message += `${index + 1}. *${item.name}* (${item.qtyLabel})\n`;
+        message += `   🔢 Qty: ${item.quantity} · 💰 Price: ₹${itemTotal}\n`;
+        if (item.orderType === 'pickup') {
+          message += `   📋 Pickup (Date: ${item.date}, Time: ${item.time})\n`;
+        } else {
+          message += `   📋 Delivery (Date: ${item.date}, Time: ${item.time}, Wing: ${item.wing}, Flat: ${item.flat})\n`;
+        }
+      });
+      message += `\n💵 *Grand Total: ₹${grandTotal}*\n`;
+      message += `\nPlease confirm my order. Thank you!`;
+
+      const waUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+      window.open(waUrl, '_blank');
+
+      cart = [];
+      saveCart();
+      cartPanel.classList.remove('open');
+    });
+  }
+}

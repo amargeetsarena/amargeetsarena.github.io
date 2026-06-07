@@ -270,8 +270,54 @@
 }
 
 .admin-form__actions--primary {
-  margin-top: 2px;
+  position: sticky;
+  bottom: -16px;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 12px 14px;
+  margin: 12px -14px -16px;
+  border-top: 1px solid #eee;
+  z-index: 10;
+  display: flex;
   justify-content: flex-end;
+  gap: 8px;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* Custom color accents for admin sections */
+.admin-card--items {
+  border: 1px solid #ececec;
+  border-left: 4px solid #3b82f6;
+  border-radius: 16px;
+  padding: 12px;
+  background-color: #f8fafc;
+  margin-bottom: 14px;
+}
+
+.admin-card--image {
+  border-left: 4px solid #ff6b35;
+  background-color: #fffaf0;
+}
+
+.admin-card--basics {
+  border-left: 4px solid #6366f1;
+  background-color: #f5f3ff;
+}
+
+.admin-card--pricing {
+  border-left: 4px solid #10b981;
+  background-color: #f0fdf4;
+}
+
+.admin-card--tags {
+  border-left: 4px solid #ec4899;
+  background-color: #fdf2f8;
+}
+
+.admin-card--advanced {
+  border-left: 4px solid #71717a;
+  background-color: #fafafa;
 }
 
 .admin-pill-group,

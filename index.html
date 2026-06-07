@@ -74,6 +74,35 @@
 
   <div id="admin-panel" class="admin-panel" style="display:none"></div>
 
+  <button id="cart-fab" class="cart-fab" title="View Cart" aria-label="View Cart">
+    <i class="fas fa-shopping-cart"></i>
+    <span id="cart-badge" class="cart-badge" style="display:none">0</span>
+  </button>
+
+  <div id="cart-panel" class="cart-panel">
+    <div class="cart-panel__header">
+      <h2 class="cart-panel__title">My Cart</h2>
+      <button type="button" class="cart-panel__close" id="cart-panel-close" aria-label="Close Cart">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    <div class="cart-panel__body">
+      <div id="cart-items-container"></div>
+      <div id="cart-checkout-container" style="display:none">
+        <div class="cart-total-summary">
+          <span>Grand Total:</span>
+          <span id="cart-total-price" class="cart-total-price">₹0</span>
+        </div>
+        
+        <form id="cart-checkout-form" class="order-form" style="padding: 0 16px 16px;">
+          <button type="submit" class="order-btn" style="background:#10b981; box-shadow: 0 4px 14px rgba(16, 185, 129, 0.4); width: 100%; margin: 10px 0 0 0;">
+            <i class="fab fa-whatsapp"></i> Place Order via WhatsApp
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
   <footer class="site-footer">
     <div class="footer-content">
       <div class="footer-section">
