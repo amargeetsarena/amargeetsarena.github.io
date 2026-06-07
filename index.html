@@ -5,73 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="description" content="Order delicious food online with pickup and delivery options">
   <title>Amargeet's Arena | Food Delivery</title>
-  
+
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://amargeetsarena.github.io/">
   <meta property="og:title" content="Amargeet's Arena | Food Delivery">
   <meta property="og:description" content="Order delicious food online with delivery options">
   <meta property="og:image" content="https://amargeetsarena.github.io/images/logo.png">
-  
+
   <!-- Twitter -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:url" content="https://amargeetsarena.github.io/">
   <meta property="twitter:title" content="Amargeet's Arena | Food Delivery">
   <meta property="twitter:description" content="Order delicious food online with delivery options">
   <meta property="twitter:image" content="https://amargeetsarena.github.io/images/logo.png">
+
   <link rel="icon" type="image/png" href="images/logo.png">
   <link rel="apple-touch-icon" href="images/logo.png">
-  <meta name="theme-color" content="#ff7043">
-  <link rel="stylesheet" href="css/style.css">
-  <!-- Font Awesome for icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <!-- Preconnect to external domains for better performance -->
+  <meta name="theme-color" content="#ff6b35">
+
+  <!-- Fonts (preconnect before stylesheet) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>
-    /* Improve date picker appearance */
-    input[type="date"]::-webkit-calendar-picker-indicator {
-      display: none; /* Hide default calendar picker */
-    }
 
-    .date-input-wrapper {
-      display: flex;
-      align-items: center;
-      position: relative;
-    }
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-    .calendar-btn {
-      background: #ff7043;
-      color: white;
-      border: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 4px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-left: 8px;
-      font-size: 14px;
-      transition: background-color 0.2s;
-    }
-
-    .calendar-btn:hover {
-      background: #e55a2b;
-    }
-
-    .calendar-btn i {
-      margin: 0;
-    }
-    
-    /* Improve select dropdown appearance */
-    select {
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-    }
-  </style>
+  <!-- Main stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
 </head>
 <body>
   <header>
@@ -93,17 +56,24 @@
       </div>
     </div>
   </header>
-  
+
   <nav class="categories-nav">
     <button class="active" data-category="all"><i class="fas fa-pizza-slice"></i> All</button>
     <button data-category="veg"><i class="fas fa-leaf"></i> Veg</button>
     <button data-category="nonveg"><i class="fas fa-drumstick-bite"></i> Non-Veg</button>
     <button data-category="withoutoniongarlic"><i class="fas fa-bread-slice"></i> No Onion/Garlic</button>
   </nav>
+
   <main>
     <div id="menu-container"></div>
   </main>
-  
+
+  <button id="admin-fab" class="admin-fab" style="display:none" title="Manage Menu">
+    <i class="fas fa-cog"></i>
+  </button>
+
+  <div id="admin-panel" class="admin-panel" style="display:none"></div>
+
   <footer class="site-footer">
     <div class="footer-content">
       <div class="footer-section">
@@ -112,8 +82,8 @@
       </div>
       <div class="footer-section">
         <h4>Contact Us</h4>
-              <p><i class="fas fa-phone"></i> +91 78994 17495</p>
-              <p><i class="fas fa-envelope"></i> amargeetsarena@gmail.com</p>
+        <p><i class="fas fa-phone"></i> +91 78994 17495</p>
+        <p><i class="fas fa-envelope"></i> amargeetsarena@gmail.com</p>
       </div>
       <div class="footer-section">
         <h4>Follow Us</h4>
@@ -128,6 +98,8 @@
       <p>&copy; 2025 Amargeet's Arena. All rights reserved.</p>
     </div>
   </footer>
+
   <script src="js/menu.js"></script>
+  <script src="js/admin.js"></script>
 </body>
 </html>
