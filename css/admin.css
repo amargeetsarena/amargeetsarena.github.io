@@ -58,6 +58,13 @@
   gap: 2px;
 }
 
+.admin-panel__header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .admin-panel__title {
   margin: 0;
   font-size: 1.1rem;
@@ -66,6 +73,36 @@
 .admin-panel__meta {
   font-size: 0.82rem;
   color: #666;
+}
+
+.admin-panel__close {
+  min-width: 44px;
+  height: 44px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #fff;
+  color: #111827;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  gap: 6px;
+  padding: 0 14px;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.admin-panel__close:hover {
+  background: #f3f4f6;
+}
+
+.admin-panel__close-icon {
+  font-size: 0.95rem;
+}
+
+.admin-panel__close-text {
+  display: none;
 }
 
 .admin-panel__search {
@@ -363,6 +400,17 @@
   .admin-panel__body {
     padding-left: 12px;
     padding-right: 12px;
+  }
+
+  .admin-panel__close {
+    min-width: 56px;
+    height: 46px;
+    padding: 0 16px;
+    font-size: 0.95rem;
+  }
+
+  .admin-panel__close-text {
+    display: inline;
   }
 
   .admin-form__grid {

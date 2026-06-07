@@ -156,9 +156,15 @@
     });
     panel.innerHTML = `
       <div class="admin-panel__header">
-        <div class="admin-panel__headline">
-          <h2 class="admin-panel__title">Menu Admin</h2>
-          <div class="admin-panel__meta">Localhost only. Changes sync immediately.</div>
+        <div class="admin-panel__header-row">
+          <div class="admin-panel__headline">
+            <h2 class="admin-panel__title">Menu Admin</h2>
+            <div class="admin-panel__meta">Localhost only. Changes sync immediately.</div>
+          </div>
+          <button type="button" class="admin-panel__close" id="admin-panel-close" aria-label="Close Menu Admin">
+            <i class="fas fa-chevron-right admin-panel__close-icon" aria-hidden="true"></i>
+            <span class="admin-panel__close-text">Back</span>
+          </button>
         </div>
         <div class="admin-panel__search">
           <input id="admin-search" type="search" placeholder="Search items, ids, tags..." value="${escapeHtml(state.query)}">
@@ -329,6 +335,13 @@
       searchInput.addEventListener('input', () => {
         state.query = searchInput.value;
         render();
+      });
+    }
+
+    const closeButton = panel.querySelector('#admin-panel-close');
+    if (closeButton) {
+      closeButton.addEventListener('click', () => {
+        panel.classList.remove('open');
       });
     }
 

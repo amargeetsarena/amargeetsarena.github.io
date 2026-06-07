@@ -1,5 +1,20 @@
 [
     {
+        "id": "cheesy_chicken_zingy_parcel",
+        "name": "Cheesy Chicken Zingy Parcel",
+        "description": "Spicy and cheesy chicken parcels with zingy flavors.",
+        "image": "images/cheesychickenzingyparcel.png",
+        "price": 200,
+        "unitLabel": "4 pieces",
+        "foodType": "nonveg",
+        "tags": [],
+        "enabled": true,
+        "deliveryType": "delivery",
+        "sortOrder": 1780834872667,
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2026-06-07T12:21:12+00:00"
+    },
+    {
         "id": "haldi_patra_pitha",
         "name": "Haldi Patra Pitha",
         "description": "Traditional Odia sweet dumplings made within turmeric leaves. Made with a delicious batter of rice flour, sabudana, urad dal, poha, and filled with sweet coconut jaggery stuffing.",
@@ -10,41 +25,26 @@
         "tags": [
             "withoutoniongarlic"
         ],
-        "enabled": false,
+        "enabled": true,
         "deliveryType": "pickup",
-        "sortOrder": 40,
+        "sortOrder": 1780834738598,
         "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2025-01-01T00:00:00Z"
-    },
-    {
-        "id": "cheesy_chicken_zingy_parcel",
-        "name": "Cheesy Chicken Zingy Parcel",
-        "description": "Spicy and cheesy chicken parcels with zingy flavors.",
-        "image": "images/cheesychickenzingyparcel.png",
-        "price": 200,
-        "unitLabel": "4 pieces",
-        "foodType": "nonveg",
-        "tags": [],
-        "enabled": false,
-        "deliveryType": "delivery",
-        "sortOrder": 30,
-        "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2025-01-01T00:00:00Z"
+        "updatedAt": "2026-06-07T12:18:58+00:00"
     },
     {
         "id": "maggi_pakoda",
         "name": "Maggi Pakoda",
         "description": "Crispy Maggi noodles fried into delicious pakoda pieces.",
         "image": "images/maggipakoda.jpg",
-        "price": 100,
+        "price": 105,
         "unitLabel": "10 pieces",
         "foodType": "veg",
         "tags": [],
         "enabled": true,
         "deliveryType": "both",
-        "sortOrder": 20,
+        "sortOrder": 1780834705543,
         "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2025-01-01T00:00:00Z"
+        "updatedAt": "2026-06-07T12:18:25+00:00"
     },
     {
         "id": "chocolate_cake",
