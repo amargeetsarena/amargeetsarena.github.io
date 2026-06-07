@@ -61,6 +61,7 @@ function normalizeItem($item, $existing = null) {
         'foodType' => ($item['foodType'] ?? 'veg') === 'nonveg' ? 'nonveg' : 'veg',
         'tags' => array_values(array_filter(array_map('trim', $tags), fn($v) => $v !== '')),
         'enabled' => filter_var($item['enabled'] ?? true, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE),
+        'visible' => filter_var($item['visible'] ?? true, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE),
         'deliveryType' => in_array(($item['deliveryType'] ?? 'both'), ['pickup', 'delivery', 'both'], true) ? $item['deliveryType'] : 'both',
         'sortOrder' => (int)($item['sortOrder'] ?? 0),
         'createdAt' => $existing['createdAt'] ?? $now,
@@ -73,6 +74,9 @@ function normalizeItem($item, $existing = null) {
 
     if ($normalized['enabled'] === null) {
         $normalized['enabled'] = true;
+    }
+    if ($normalized['visible'] === null) {
+        $normalized['visible'] = true;
     }
 
     return $normalized;

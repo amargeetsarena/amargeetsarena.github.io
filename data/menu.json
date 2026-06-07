@@ -8,11 +8,12 @@
         "unitLabel": "4 pieces",
         "foodType": "nonveg",
         "tags": [],
-        "enabled": true,
+        "enabled": false,
+        "visible": true,
         "deliveryType": "delivery",
-        "sortOrder": 1780834872667,
+        "sortOrder": 1780835534012,
         "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2026-06-07T12:21:12+00:00"
+        "updatedAt": "2026-06-07T12:32:14+00:00"
     },
     {
         "id": "haldi_patra_pitha",
@@ -25,11 +26,12 @@
         "tags": [
             "withoutoniongarlic"
         ],
-        "enabled": true,
+        "enabled": false,
+        "visible": true,
         "deliveryType": "pickup",
-        "sortOrder": 1780834738598,
+        "sortOrder": 1780835524552,
         "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2026-06-07T12:18:58+00:00"
+        "updatedAt": "2026-06-07T12:32:04+00:00"
     },
     {
         "id": "maggi_pakoda",

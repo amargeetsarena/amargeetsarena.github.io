@@ -50,6 +50,7 @@
       foodType: 'veg',
       tags: '',
       enabled: true,
+      visible: true,
       deliveryType: 'both',
       sortOrder: Date.now(),
       createdAt: now,
@@ -189,7 +190,7 @@
                 <div class="admin-item__row">
                   <div>
                     <strong>${escapeHtml(item.name)}</strong>
-                    <div class="admin-item__meta">${escapeHtml(item.id)} · ${escapeHtml(item.foodType)} · ${item.enabled ? 'enabled' : 'disabled'}</div>
+                    <div class="admin-item__meta">${escapeHtml(item.id)} · ${escapeHtml(item.foodType)} · ${item.enabled ? 'enabled' : 'disabled'} · ${item.visible !== false ? 'visible' : 'hidden'}</div>
                     <div class="admin-item__meta">₹${escapeHtml(item.price)} · order ${escapeHtml(item.sortOrder)}</div>
                   </div>
                   <div class="admin-item__actions">
@@ -215,6 +216,10 @@
               <label class="admin-switch">
                 <input name="enabled" type="checkbox" ${editingItem.enabled !== false ? 'checked' : ''}>
                 <span>Enabled</span>
+              </label>
+              <label class="admin-switch">
+                <input name="visible" type="checkbox" ${editingItem.visible !== false ? 'checked' : ''}>
+                <span>Visible</span>
               </label>
             </div>
             <div class="admin-image-area">
@@ -521,6 +526,7 @@
       foodType: String(fd.get('foodType') || 'veg'),
       tags,
       enabled: fd.get('enabled') === 'on',
+      visible: fd.get('visible') === 'on',
       deliveryType: String(fd.get('deliveryType') || 'both'),
       sortOrder: Number(fd.get('sortOrder') || 0)
     };

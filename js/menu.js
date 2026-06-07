@@ -126,7 +126,7 @@ function renderMenu(filter) {
     const isArray = Array.isArray(item.category);
     const matchesCategory = filter === "all" ||
       (isArray ? item.category.includes(filter) : item.category === filter);
-    return matchesCategory && item.enabled !== false;
+    return matchesCategory && item.visible !== false;
   });
 
   if (filteredItems.length === 0) {
@@ -148,6 +148,7 @@ function renderMenu(filter) {
       ? item.category.join(' ')
       : String(item.category || '');
     itemElement.className = `menu-item ${categoryClasses}`.trim();
+    const isOrderable = item.enabled !== false;
 
     const today = new Date();
     const tomorrow = new Date(today);
@@ -176,9 +177,9 @@ function renderMenu(filter) {
 
         <div class="qty-total-row">
           <div class="quantity-selector">
-            <button type="button" class="qty-btn minus" data-item="${item.name}">−</button>
+            <button type="button" class="qty-btn minus" data-item="${item.name}" ${isOrderable ? '' : 'disabled aria-disabled="true"'}>−</button>
             <span class="quantity">1</span>
-            <button type="button" class="qty-btn plus" data-item="${item.name}">+</button>
+            <button type="button" class="qty-btn plus" data-item="${item.name}" ${isOrderable ? '' : 'disabled aria-disabled="true"'}>+</button>
           </div>
           <div class="total-price">Total: ${item.price}</div>
         </div>
@@ -197,7 +198,8 @@ function renderMenu(filter) {
                        ${item.deliveryType === 'pickup' || item.deliveryType === 'both' ? '' : 'disabled'}
                        ${item.deliveryType === 'delivery' ? '' : 'required'}
                        ${item.deliveryType === 'pickup' ? 'checked' : ''}
-                       ${item.deliveryType === 'pickup' ? 'onclick="return false;" style="cursor: not-allowed;"' : ''}>
+                       ${item.deliveryType === 'pickup' ? 'onclick="return false;" style="cursor: not-allowed;"' : ''}
+                       ${isOrderable ? '' : 'disabled aria-disabled="true"'}>
                 <span>Pickup${item.deliveryType === 'pickup' ? ' Only' : ''}</span>
               </label>
 
@@ -210,7 +212,8 @@ function renderMenu(filter) {
                        ${item.deliveryType === 'delivery' || item.deliveryType === 'both' ? '' : 'disabled'}
                        ${item.deliveryType === 'pickup' ? '' : 'required'}
                        ${item.deliveryType === 'delivery' ? 'checked' : ''}
-                       ${item.deliveryType === 'delivery' ? 'onclick="return false;" style="cursor: not-allowed;"' : ''}>
+                       ${item.deliveryType === 'delivery' ? 'onclick="return false;" style="cursor: not-allowed;"' : ''}
+                       ${isOrderable ? '' : 'disabled aria-disabled="true"'}>
                 <span>Delivery${item.deliveryType === 'delivery' ? ' Only' : ''}</span>
               </label>
             </div>
@@ -228,6 +231,7 @@ function renderMenu(filter) {
                      value="${tomorrowStr}"
                      data-item="${item.name}"
                      required
+                     ${isOrderable ? '' : 'disabled aria-disabled="true"'}
                      oninvalid="this.setCustomValidity('Please select a delivery date')"
                      oninput="this.setCustomValidity('')">
               <button type="button" class="calendar-btn" data-input-id="${dateId}">
@@ -243,7 +247,8 @@ function renderMenu(filter) {
             <select id="${timeId}"
                     class="delivery-time"
                     data-item="${item.name}"
-                    required>
+                    required
+                    ${isOrderable ? '' : 'disabled aria-disabled="true"'}>
               <option value="" selected>Select Time</option>
             </select>
           </div>
@@ -254,7 +259,8 @@ function renderMenu(filter) {
             </label>
             <select id="${wingId}"
                     class="delivery-wing"
-                    data-item="${item.name}" required>
+                    data-item="${item.name}" required
+                    ${isOrderable ? '' : 'disabled aria-disabled="true"'}>
               <option value="">Select Wing</option>
               <option value="1">1</option>
               <option value="2">2</option>
@@ -275,10 +281,11 @@ function renderMenu(filter) {
                    maxlength="4"
                    title="Please enter a flat number (1-4 digits)"
                    data-item="${item.name}"
-                   required>
+                   required
+                   ${isOrderable ? '' : 'disabled aria-disabled="true"'}>
           </div>
 
-          <button type="submit" class="order-btn" data-item="${item.name}">
+          <button type="submit" class="order-btn" data-item="${item.name}" ${isOrderable ? '' : 'disabled aria-disabled="true"'}>
             <i class="fab fa-whatsapp"></i> Order Now
           </button>
         </div>
@@ -286,13 +293,24 @@ function renderMenu(filter) {
       </div>
     `;
 
+    if (!isOrderable) {
+      itemElement.classList.add('disabled');
+      const content = itemElement.querySelector('.menu-item-content');
+      if (content) {
+        const banner = document.createElement('div');
+        banner.className = 'menu-item__disabled-banner';
+        banner.innerHTML = '<i class="fas fa-lock"></i> Ordering disabled';
+        content.insertBefore(banner, content.firstChild);
+      }
+    }
+
     container.appendChild(itemElement);
 
     itemElement.addEventListener('click', (e) => {
-      if (e.target.closest('form') || e.target.closest('button') || e.target.closest('input') || e.target.closest('select')) {
-        return;
-      }
-      openItemModal(item);
+    if (e.target.closest('form') || e.target.closest('button') || e.target.closest('input') || e.target.closest('select')) {
+      return;
+    }
+    openItemModal(item);
     });
 
     const minusBtn = itemElement.querySelector('.minus');
@@ -422,6 +440,10 @@ function renderMenu(filter) {
 
     orderForm.addEventListener('submit', (e) => {
       e.preventDefault();
+      if (item.enabled === false) {
+        alert('This item is currently not available for ordering.');
+        return;
+      }
       try {
         const selectedOrderType = itemElement.querySelector('.order-type:checked');
         if (!selectedOrderType) {
@@ -559,12 +581,13 @@ function openItemModal(item) {
         <div class="modal-body">
           <img src="${item.image}" alt="${item.name}" class="modal-image" onerror="this.src='images/logo.png'">
           <div class="modal-description">${item.desc}</div>
+          ${item.enabled === false ? '<div class="menu-item__disabled-banner"><i class="fas fa-lock"></i> Ordering disabled for this item</div>' : ''}
           <div class="modal-details">
             <div>
               <div class="modal-price">${item.price}</div>
               <div class="modal-quantity">${item.qty}</div>
             </div>
-            <button class="order-btn" onclick="closeModalAndScroll('${item.name}')">
+            <button class="order-btn" ${item.enabled === false ? 'disabled aria-disabled="true"' : ''} onclick="${item.enabled === false ? 'return false;' : `closeModalAndScroll('${item.name}')`}">
               <i class="fab fa-whatsapp"></i> Order Now
             </button>
           </div>

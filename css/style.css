@@ -744,31 +744,58 @@ input[type="date"]::-webkit-calendar-picker-indicator { display: none; }
 
 /* ── Disabled State ──────────────────────────────────────────── */
 .menu-item.disabled {
-  opacity: .55;
-  pointer-events: none;
-  cursor: not-allowed;
+  opacity: 1;
+  cursor: default;
   position: relative;
 }
 
 .menu-item.disabled::after {
-  content: "Currently Unavailable";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-5deg);
-  background: rgba(220,20,20,.85);
-  color: #fff;
-  padding: 7px 16px;
-  border-radius: var(--radius-sm);
-  font-weight: 700;
-  font-size: .8rem;
-  z-index: 10;
-  white-space: nowrap;
-  box-shadow: var(--shadow-md);
-  letter-spacing: .02em;
+  content: none;
 }
 
-.menu-item.disabled img { filter: grayscale(80%); }
+.menu-item__disabled-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px 0;
+  color: var(--text-secondary);
+  font-size: .8rem;
+  font-weight: 600;
+  letter-spacing: .01em;
+}
+
+.menu-item__disabled-banner i {
+  color: #9ca3af;
+}
+
+.menu-item.disabled .qty-btn,
+.menu-item.disabled .radio-label,
+.menu-item.disabled .delivery-date,
+.menu-item.disabled .delivery-time,
+.menu-item.disabled .delivery-wing,
+.menu-item.disabled .delivery-flat,
+.menu-item.disabled .calendar-btn,
+.menu-item.disabled .order-btn {
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.menu-item.disabled .qty-btn,
+.menu-item.disabled .calendar-btn,
+.menu-item.disabled .order-btn {
+  filter: grayscale(35%);
+  opacity: .55;
+}
+
+.menu-item.disabled .radio-label,
+.menu-item.disabled .delivery-date,
+.menu-item.disabled .delivery-time,
+.menu-item.disabled .delivery-wing,
+.menu-item.disabled .delivery-flat {
+  opacity: .65;
+}
+
+.menu-item.disabled img { filter: grayscale(20%); }
 
 /* ── "No items" / Vacation message ──────────────────────────── */
 .no-items {
