@@ -386,6 +386,10 @@ header {
   padding: 0 16px 8px;
 }
 
+.menu-item-content .desc {
+  display: none;
+}
+
 .delivery-schedule-note--slots {
   color: var(--text-muted);
 }

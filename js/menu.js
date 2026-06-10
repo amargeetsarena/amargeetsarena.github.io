@@ -319,7 +319,6 @@ function renderMenu(filter) {
           <div class="price">Price: ${item.price}</div>
           <div class="qty">${item.qty}</div>
         </div>
-        <div class="desc">${item.desc}</div>
         ${item.prepType === 'advance' ? `<div class="menu-item__prep-note">Order at least ${Math.max(0, Number(item.prepHours) || 0)} hours in advance.</div>` : ''}
 
         <div class="qty-total-row">
