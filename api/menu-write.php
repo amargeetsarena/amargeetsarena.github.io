@@ -51,6 +51,17 @@ function normalizeItem($item, $existing = null) {
         $tags = [];
     }
 
+    $parseList = function ($value) {
+        if (is_array($value)) {
+            return array_values(array_filter(array_map('trim', $value), fn($v) => $v !== ''));
+        }
+        $parts = preg_split('/\s*,\s*/', (string)$value, -1, PREG_SPLIT_NO_EMPTY);
+        if (!is_array($parts)) {
+            return [];
+        }
+        return array_values(array_filter(array_map('trim', $parts), fn($v) => $v !== ''));
+    };
+
     $normalized = [
         'id' => $id,
         'name' => trim((string)($item['name'] ?? '')),
@@ -64,6 +75,16 @@ function normalizeItem($item, $existing = null) {
         'visible' => filter_var($item['visible'] ?? true, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE),
         'deliveryType' => in_array(($item['deliveryType'] ?? 'both'), ['pickup', 'delivery', 'both'], true) ? $item['deliveryType'] : 'both',
         'sortOrder' => (int)($item['sortOrder'] ?? 0),
+        'prepType' => ($item['prepType'] ?? 'instant') === 'advance' ? 'advance' : 'instant',
+        'prepHours' => max(0, (int)($item['prepHours'] ?? 0)),
+        'cutoffMode' => ($item['cutoffMode'] ?? 'exact-hours') === 'slot-based' ? 'slot-based' : 'exact-hours',
+        'isSameDayAllowed' => filter_var($item['isSameDayAllowed'] ?? false, FILTER_VALIDATE_BOOL, FILTER_NULL_ON_FAILURE),
+        'availableOrderTypes' => $parseList($item['availableOrderTypes'] ?? []),
+        'availableDays' => $parseList($item['availableDays'] ?? []),
+        'availableTimeSlots' => $parseList($item['availableTimeSlots'] ?? []),
+        'blackoutDates' => $parseList($item['blackoutDates'] ?? []),
+        'maxAdvanceDays' => max(0, (int)($item['maxAdvanceDays'] ?? 0)),
+        'leadTimeByOrderType' => is_array($item['leadTimeByOrderType'] ?? null) ? $item['leadTimeByOrderType'] : [],
         'createdAt' => $existing['createdAt'] ?? $now,
         'updatedAt' => $now
     ];
@@ -77,6 +98,9 @@ function normalizeItem($item, $existing = null) {
     }
     if ($normalized['visible'] === null) {
         $normalized['visible'] = true;
+    }
+    if ($normalized['isSameDayAllowed'] === null) {
+        $normalized['isSameDayAllowed'] = false;
     }
 
     return $normalized;

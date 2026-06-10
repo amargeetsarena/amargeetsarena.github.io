@@ -52,6 +52,15 @@
       enabled: true,
       visible: true,
       deliveryType: 'both',
+      prepType: 'instant',
+      prepHours: 0,
+      cutoffMode: 'exact-hours',
+      isSameDayAllowed: false,
+      availableOrderTypes: [],
+      availableDays: [],
+      availableTimeSlots: [],
+      blackoutDates: [],
+      maxAdvanceDays: 0,
       sortOrder: Date.now(),
       createdAt: now,
       updatedAt: now
@@ -84,6 +93,16 @@
       ? tags
       : String(tags || '').split(',').map(v => v.trim()).filter(Boolean);
     return [...new Set(list)];
+  }
+
+  function normalizeList(value) {
+    if (Array.isArray(value)) return value.map(v => String(v).trim()).filter(Boolean);
+    return String(value || '').split(',').map(v => v.trim()).filter(Boolean);
+  }
+
+  function normalizeMultiSelect(select) {
+    if (!select) return [];
+    return Array.from(select.selectedOptions || []).map(option => option.value).filter(Boolean);
   }
 
   function isCustomUnit(value) {
@@ -146,6 +165,12 @@
     const customTags = currentTags.filter(tag => !isPresetTag(tag));
     const currentUnit = String(editingItem.unitLabel || '');
     const unitIsCustom = isCustomUnit(currentUnit) && currentUnit !== '';
+    const prepType = editingItem.prepType === 'advance' ? 'advance' : 'instant';
+    const leadTimeHours = Math.max(0, Number(editingItem.prepHours) || 0);
+    const availableOrderTypes = normalizeList(editingItem.availableOrderTypes);
+    const availableDays = normalizeList(editingItem.availableDays);
+    const availableTimeSlots = normalizeList(editingItem.availableTimeSlots);
+    const blackoutDates = normalizeList(editingItem.blackoutDates);
     const filteredItems = state.items.filter(item => {
       const haystack = [
         item.name,
@@ -191,7 +216,8 @@
                   <div>
                     <strong>${escapeHtml(item.name)}</strong>
                     <div class="admin-item__meta">${escapeHtml(item.id)} · ${escapeHtml(item.foodType)} · ${item.enabled ? 'enabled' : 'disabled'} · ${item.visible !== false ? 'visible' : 'hidden'}</div>
-                    <div class="admin-item__meta">₹${escapeHtml(item.price)} · order ${escapeHtml(item.sortOrder)}</div>
+                  <div class="admin-item__meta">₹${escapeHtml(item.price)}</div>
+                    <div class="admin-item__meta">${item.prepType === 'advance' ? `Lead time ${escapeHtml(item.prepHours || 0)}h` : 'Instant prep'}</div>
                   </div>
                   <div class="admin-item__actions">
                     <button class="admin-btn admin-btn--ghost" data-action="edit" data-id="${escapeHtml(item.id)}">Edit</button>
@@ -308,18 +334,74 @@
             <button type="button" class="admin-link-button" id="admin-add-custom-tag">Add custom tag</button>
           </section>
 
-          <details class="admin-card admin-card--advanced">
-            <summary>Advanced</summary>
-            <div class="admin-advanced-grid">
-              <label>Custom unit
-                <input name="customUnit" id="admin-unit-preset" value="${escapeHtml(unitIsCustom ? currentUnit : '')}" placeholder="Type custom unit">
-                <span class="admin-form__hint">Only needed for uncommon units.</span>
+          <section class="admin-card admin-card--schedule">
+            <div class="admin-card__header">
+              <div>
+                <h4>Scheduling</h4>
+                <p>Simple ordering rules for customers.</p>
+              </div>
+            </div>
+            <div class="admin-form__grid">
+              <label>Preparation type
+                <select name="prepType" id="admin-prep-type">
+                  <option value="instant" ${prepType === 'instant' ? 'selected' : ''}>Instant</option>
+                  <option value="advance" ${prepType === 'advance' ? 'selected' : ''}>Advance</option>
+                </select>
               </label>
-              <label>Sort order
-                <input name="sortOrder" type="number" min="0" value="${escapeHtml(editingItem.sortOrder)}">
+              <label id="admin-prep-hours-wrap" style="${prepType === 'advance' ? '' : 'display:none'}">Preparation lead time (hours)
+                <input name="prepHours" type="number" min="0" step="1" value="${escapeHtml(leadTimeHours)}" placeholder="24">
+              </label>
+              <label>Cutoff mode
+                <select name="cutoffMode">
+                  <option value="exact-hours" ${String(editingItem.cutoffMode || 'exact-hours') === 'exact-hours' ? 'selected' : ''}>Exact hours</option>
+                  <option value="slot-based" ${String(editingItem.cutoffMode || 'exact-hours') === 'slot-based' ? 'selected' : ''}>Slot based</option>
+                </select>
+              </label>
+              <label>Same day allowed
+                <select name="isSameDayAllowed">
+                  <option value="false" ${editingItem.isSameDayAllowed ? '' : 'selected'}>No</option>
+                  <option value="true" ${editingItem.isSameDayAllowed ? 'selected' : ''}>Yes</option>
+                </select>
+              </label>
+              <label>Available order types
+                <select name="availableOrderTypes" id="admin-order-types" multiple size="3">
+                  <option value="pickup" ${availableOrderTypes.includes('pickup') ? 'selected' : ''}>Pickup</option>
+                  <option value="delivery" ${availableOrderTypes.includes('delivery') ? 'selected' : ''}>Delivery</option>
+                </select>
+                <span class="admin-form__hint">Hold Cmd/Ctrl to select more than one.</span>
+              </label>
+              <label>Available days
+                <select name="availableDays" id="admin-available-days" multiple size="5">
+                  ${['monday','tuesday','wednesday','thursday','friday','saturday','sunday'].map(day => `
+                    <option value="${day}" ${availableDays.includes(day) ? 'selected' : ''}>${day.charAt(0).toUpperCase() + day.slice(1)}</option>
+                  `).join('')}
+                </select>
+              </label>
+              <label>Available time slots
+                <select name="availableTimeSlots" id="admin-time-slots" multiple size="4">
+                  ${((window.FoodSchedule && window.FoodSchedule.DEFAULT_SLOTS) || [
+                    { id: 'morning', label: 'Morning' },
+                    { id: 'afternoon', label: 'Afternoon' },
+                    { id: 'evening', label: 'Evening' }
+                  ]).map(slot => `
+                    <option value="${escapeHtml(slot.id)}" ${availableTimeSlots.includes(slot.id) ? 'selected' : ''}>${escapeHtml(slot.label)}</option>
+                  `).join('')}
+                </select>
+              </label>
+              <label>Blackout dates
+                <input name="blackoutDates" value="${escapeHtml(blackoutDates.join(', '))}" placeholder="2026-06-15, 2026-06-16">
+              </label>
+              <label>Max advance booking days
+                <input name="maxAdvanceDays" type="number" min="0" value="${escapeHtml(editingItem.maxAdvanceDays || 0)}" placeholder="7">
               </label>
             </div>
-          </details>
+            <div class="admin-form__hint" id="admin-schedule-preview"></div>
+          </section>
+
+          <label>Custom unit
+            <input name="customUnit" id="admin-unit-preset" value="${escapeHtml(unitIsCustom ? currentUnit : '')}" placeholder="Type custom unit">
+            <span class="admin-form__hint">Only needed for uncommon units.</span>
+          </label>
 
           <div class="admin-form__actions admin-form__actions--primary">
             <button type="submit" class="admin-btn admin-btn--primary">${state.editingId ? 'Update Item' : 'Create Item'}</button>
@@ -388,6 +470,12 @@
     const imageStatus = panel.querySelector('#admin-image-status');
     const imagePreview = panel.querySelector('.admin-image-preview');
     const addCustomTag = panel.querySelector('#admin-add-custom-tag');
+    const prepTypeInput = panel.querySelector('#admin-prep-type');
+    const prepHoursWrap = panel.querySelector('#admin-prep-hours-wrap');
+    const schedulePreview = panel.querySelector('#admin-schedule-preview');
+    const orderTypesSelect = panel.querySelector('#admin-order-types');
+    const daysSelect = panel.querySelector('#admin-available-days');
+    const slotsSelect = panel.querySelector('#admin-time-slots');
 
     const syncIdFromName = () => {
       if (!idInput || state.idTouched) return;
@@ -505,6 +593,25 @@
       });
     }
 
+    function updateSchedulePreview() {
+      if (!schedulePreview) return;
+      const mode = prepTypeInput ? prepTypeInput.value : 'instant';
+      const hours = Math.max(0, Number(panel.querySelector('input[name="prepHours"]')?.value || 0));
+      schedulePreview.textContent = mode === 'advance'
+        ? `Customers must order at least ${hours} hours in advance.`
+        : 'This item can be ordered instantly.'
+      ;
+      if (prepHoursWrap) {
+        prepHoursWrap.style.display = mode === 'advance' ? '' : 'none';
+      }
+    }
+
+    if (prepTypeInput) {
+      prepTypeInput.addEventListener('change', updateSchedulePreview);
+    }
+    panel.querySelector('input[name="prepHours"]')?.addEventListener('input', updateSchedulePreview);
+    updateSchedulePreview();
+
     panel.querySelector('#admin-form').addEventListener('submit', handleSubmit);
     panel.querySelectorAll('[data-action]').forEach(button => {
       button.addEventListener('click', handleAction);
@@ -514,6 +621,9 @@
   function readForm(form) {
     const fd = new FormData(form);
     const tags = normalizeTags(fd.get('tags'));
+    const orderTypesSelect = form.querySelector('select[name="availableOrderTypes"]');
+    const daysSelect = form.querySelector('select[name="availableDays"]');
+    const slotsSelect = form.querySelector('select[name="availableTimeSlots"]');
     return {
       id: String(fd.get('id') || '').trim(),
       name: String(fd.get('name') || '').trim(),
@@ -526,6 +636,15 @@
       enabled: fd.get('enabled') === 'on',
       visible: fd.get('visible') === 'on',
       deliveryType: String(fd.get('deliveryType') || 'both'),
+      prepType: String(fd.get('prepType') || 'instant'),
+      prepHours: Math.max(0, Number(fd.get('prepHours') || 0)),
+      cutoffMode: String(fd.get('cutoffMode') || 'exact-hours'),
+      isSameDayAllowed: fd.get('isSameDayAllowed') === 'true',
+      availableOrderTypes: normalizeMultiSelect(orderTypesSelect),
+      availableDays: normalizeMultiSelect(daysSelect),
+      availableTimeSlots: normalizeMultiSelect(slotsSelect),
+      blackoutDates: normalizeList(fd.get('blackoutDates')),
+      maxAdvanceDays: Math.max(0, Number(fd.get('maxAdvanceDays') || 0)),
       sortOrder: Number(fd.get('sortOrder') || 0)
     };
   }

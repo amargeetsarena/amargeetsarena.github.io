@@ -269,6 +269,15 @@
   line-height: 1.35;
 }
 
+.admin-card--advanced input,
+.admin-card--advanced select {
+  width: 100%;
+}
+
+.admin-card--schedule select[multiple] {
+  min-height: 120px;
+}
+
 .admin-form__actions--primary {
   position: sticky;
   bottom: -16px;

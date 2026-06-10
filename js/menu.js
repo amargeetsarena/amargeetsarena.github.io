@@ -81,8 +81,44 @@ function adaptItem(item) {
     desc: item.description || '',
     price: `₹${item.price}`,
     qty: item.unitLabel || '',
-    basePrice: Number(item.price) || 0
+    basePrice: Number(item.price) || 0,
+    prepType: item.prepType || 'instant',
+    prepHours: Math.max(0, Number(item.prepHours) || 0),
+    cutoffMode: item.cutoffMode || 'exact-hours',
+    isSameDayAllowed: item.isSameDayAllowed === true,
+    availableOrderTypes: Array.isArray(item.availableOrderTypes) ? item.availableOrderTypes : [],
+    availableDays: Array.isArray(item.availableDays) ? item.availableDays : [],
+    availableTimeSlots: Array.isArray(item.availableTimeSlots) ? item.availableTimeSlots : [],
+    blackoutDates: Array.isArray(item.blackoutDates) ? item.blackoutDates : [],
+    maxAdvanceDays: Math.max(0, Number(item.maxAdvanceDays) || 0),
+    timeSlots: Array.isArray(item.timeSlots) ? item.timeSlots : (window.FoodSchedule ? window.FoodSchedule.DEFAULT_SLOTS : [])
   };
+}
+
+function getCartScheduleItems(cartItems) {
+  return (cartItems || []).map(item => ({
+    ...item,
+    prepType: item.prepType || 'instant',
+    prepHours: Math.max(0, Number(item.prepHours) || 0),
+    cutoffMode: item.cutoffMode || 'exact-hours',
+    isSameDayAllowed: item.isSameDayAllowed === true,
+    availableOrderTypes: Array.isArray(item.availableOrderTypes) ? item.availableOrderTypes : [],
+    availableDays: Array.isArray(item.availableDays) ? item.availableDays : [],
+    availableTimeSlots: Array.isArray(item.availableTimeSlots) ? item.availableTimeSlots : [],
+    blackoutDates: Array.isArray(item.blackoutDates) ? item.blackoutDates : [],
+    timeSlots: Array.isArray(item.timeSlots) ? item.timeSlots : (window.FoodSchedule ? window.FoodSchedule.DEFAULT_SLOTS : [])
+  }));
+}
+
+function getOrderTypeForItem(item) {
+  if (item.deliveryType === 'pickup') return 'pickup';
+  if (item.deliveryType === 'delivery') return 'delivery';
+  return 'delivery';
+}
+
+function getEarliestCartSelection(cartItems, orderType, now = new Date()) {
+  if (!window.FoodSchedule) return null;
+  return window.FoodSchedule.getFirstAvailableDate(getCartScheduleItems(cartItems), orderType, now);
 }
 
 async function loadMenu() {
@@ -257,13 +293,10 @@ function renderMenu(filter) {
     itemElement.className = `menu-item ${categoryClasses}`.trim();
     const isOrderable = item.enabled !== false;
 
-    const today = new Date();
-    const tomorrow = new Date(today);
-    tomorrow.setDate(tomorrow.getDate() + 1);
-
-    const todayStr = today.toISOString().split('T')[0];
-    const tomorrowStr = tomorrow.toISOString().split('T')[0];
-    let minDate = todayStr;
+    const now = new Date();
+    const scheduleItems = [item];
+    const earliest = window.FoodSchedule ? window.FoodSchedule.getFirstAvailableDate(scheduleItems, getOrderTypeForItem(item), now) : null;
+    const defaultDate = earliest ? earliest.date : new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString().split('T')[0];
 
     const safeId = (item.id || item.name || 'item').replace(/\s+/g, '-').toLowerCase().replace(/[^a-z0-9-_]/g, '');
     const orderTypeName = `order-type-${safeId}`;
@@ -287,6 +320,7 @@ function renderMenu(filter) {
           <div class="qty">${item.qty}</div>
         </div>
         <div class="desc">${item.desc}</div>
+        ${item.prepType === 'advance' ? `<div class="menu-item__prep-note">Order at least ${Math.max(0, Number(item.prepHours) || 0)} hours in advance.</div>` : ''}
 
         <div class="qty-total-row">
           <div class="quantity-selector">
@@ -332,7 +366,7 @@ function renderMenu(filter) {
             </div>
           </div>
 
-          <div class="form-group">
+              <div class="form-group">
             <label for="${dateId}">
               <i class="far fa-calendar-alt"></i> Date
             </label>
@@ -340,8 +374,8 @@ function renderMenu(filter) {
               <input type="date"
                      id="${dateId}"
                      class="delivery-date"
-                     min="${minDate}"
-                     value="${tomorrowStr}"
+                     min="${defaultDate}"
+                     value="${defaultDate}"
                      data-item="${item.name}"
                      required
                      ${isOrderable ? '' : 'disabled aria-disabled="true"'}
@@ -352,6 +386,7 @@ function renderMenu(filter) {
               </button>
             </div>
             <div class="delivery-date-display" aria-live="polite"></div>
+            <div class="delivery-schedule-note"></div>
           </div>
 
           <div class="form-group">
@@ -365,6 +400,7 @@ function renderMenu(filter) {
                     ${isOrderable ? '' : 'disabled aria-disabled="true"'}>
               <option value="" selected>Select Time</option>
             </select>
+            <div class="delivery-schedule-note delivery-schedule-note--slots"></div>
           </div>
 
           <div class="form-group delivery-only" id="wing-group-${safeId}">
@@ -497,13 +533,17 @@ function renderMenu(filter) {
           }
         }
 
-        const qty = parseInt(quantityEl.textContent) || 1;
+    const qty = parseInt(quantityEl.textContent) || 1;
+        const selectedSlot = allowedTimeSlots.find(slot => slot.id === timeSelect.value) || { id: timeSelect.value, start: '', end: '' };
         
         addToCart({
           ...item,
           orderType: selectedOrderType.value,
           date: dateInput ? dateInput.value : '',
           time: timeSelect ? timeSelect.value : '',
+          timeLabel: timeSelect && timeSelect.selectedOptions[0] ? timeSelect.selectedOptions[0].textContent : timeSelect.value,
+          timeStart: selectedSlot.start || '',
+          timeEnd: selectedSlot.end || '',
           wing: (selectedOrderType.value === 'delivery' && wingSelect) ? wingSelect.value : '',
           flat: (selectedOrderType.value === 'delivery' && flatInput) ? flatInput.value : ''
         }, qty);
@@ -541,69 +581,71 @@ function renderMenu(filter) {
 
     const timeSelect = itemElement.querySelector('.delivery-time');
     const dateInput = itemElement.querySelector('.delivery-date');
+    const scheduleNote = itemElement.querySelector('.delivery-schedule-note');
+    const slotsNote = itemElement.querySelector('.delivery-schedule-note--slots');
+    const allowedTimeSlots = Array.isArray(item.timeSlots) && item.timeSlots.length ? item.timeSlots : (window.FoodSchedule ? window.FoodSchedule.DEFAULT_SLOTS : []);
 
-    function updateMinDate() {
-      if (timeSelect && dateInput) {
-        const selectedTime = timeSelect.value;
-        const selectedDate = dateInput.value;
-
-        if (selectedTime.includes('Morning') || selectedTime.includes('Afternoon')) {
-          dateInput.min = tomorrowStr;
-          if (dateInput.value === todayStr) {
-            dateInput.value = tomorrowStr;
-          }
-        } else {
-          dateInput.min = todayStr;
-        }
-
-        updateAvailableTimeSlots(selectedDate);
-      }
+    function getSelectedOrderType() {
+      const selected = itemElement.querySelector('.order-type:checked');
+      return selected ? selected.value : getOrderTypeForItem(item);
     }
 
     function updateAvailableTimeSlots(selectedDate) {
       if (!timeSelect) return;
-
-      const now = new Date();
-      const currentHour = now.getHours();
-      const isToday = selectedDate === todayStr;
-
-      const allSlots = [
-        { value: 'Morning (9 AM - 12 PM)', hour: 9, minute: 0, endHour: 12, endMinute: 0 },
-        { value: 'Afternoon (12 PM - 4 PM)', hour: 12, minute: 0, endHour: 16, endMinute: 0 },
-        { value: 'Evening (4 PM - 8 PM)', hour: 16, minute: 0, endHour: 20, endMinute: 0 }
-      ];
-
-      let availableSlots;
-      if (isToday) {
-        availableSlots = allSlots.filter(slot => currentHour < slot.endHour);
-      } else {
-        availableSlots = allSlots;
-      }
-
+      const orderType = getSelectedOrderType();
+      const validSlots = window.FoodSchedule ? window.FoodSchedule.getValidSlotsForDate(scheduleItems, selectedDate, orderType, new Date()) : allowedTimeSlots;
       const currentValue = timeSelect.value;
       timeSelect.innerHTML = '<option value="" selected>Select Time</option>';
-
-      availableSlots.forEach(slot => {
+      validSlots.forEach(slot => {
         const option = document.createElement('option');
-        option.value = slot.value;
-        option.textContent = slot.value;
+        option.value = slot.id;
+        option.textContent = window.FoodSchedule
+          ? `${slot.label} (${window.FoodSchedule.formatSlotTime(slot.start)} - ${window.FoodSchedule.formatSlotTime(slot.end)})`
+          : slot.label;
         timeSelect.appendChild(option);
       });
 
-      if (currentValue && availableSlots.some(slot => slot.value === currentValue)) {
+      if (currentValue && validSlots.some(slot => slot.id === currentValue)) {
         timeSelect.value = currentValue;
       } else {
         timeSelect.value = '';
       }
+
+      if (slotsNote) {
+        slotsNote.textContent = validSlots.length
+          ? 'Only valid slots are shown.'
+          : 'No valid time slots available for this date.';
+      }
+
+      if (scheduleNote && window.FoodSchedule) {
+        const msg = earliest ? window.FoodSchedule.formatEarliestSlotMessage(scheduleItems, orderType, new Date()) : 'No available slot found.';
+        scheduleNote.textContent = msg;
+      }
     }
 
-    updateMinDate();
+    function syncDateConstraints() {
+      const orderType = getSelectedOrderType();
+      const firstAvailable = window.FoodSchedule ? window.FoodSchedule.getFirstAvailableDate(scheduleItems, orderType, new Date()) : null;
+      const minDate = firstAvailable ? firstAvailable.date : defaultDate;
+      if (dateInput) {
+        dateInput.min = minDate;
+        if (dateInput.value && dateInput.value < minDate) {
+          dateInput.value = minDate;
+        }
+      }
+      updateAvailableTimeSlots(dateInput ? dateInput.value : minDate);
+    }
 
-    timeSelect.addEventListener('change', updateMinDate);
+    syncDateConstraints();
+
+    if (timeSelect) {
+      timeSelect.addEventListener('change', syncDateConstraints);
+    }
 
     dateInput.addEventListener('change', () => {
       const selectedDate = dateInput.value;
       updateAvailableTimeSlots(selectedDate);
+      updateDateDisplay();
     });
 
     const calendarBtn = itemElement.querySelector('.calendar-btn');
@@ -658,6 +700,17 @@ function renderMenu(filter) {
           return;
         }
 
+        if (window.FoodSchedule) {
+        const validation = window.FoodSchedule.validateCartSchedule([{
+          ...item,
+          timeSlots: allowedTimeSlots
+        }], dateInput.value, allowedTimeSlots.find(slot => slot.id === timeSelect.value) || { id: timeSelect.value }, selectedOrderType.value, new Date());
+          if (!validation.valid) {
+            alert(validation.message);
+            return;
+          }
+        }
+
         if (selectedOrderType.value === 'delivery') {
           if (!wingSelect.value) {
             alert('Please select your wing');
@@ -691,13 +744,14 @@ function renderMenu(filter) {
         const pickupRadio = itemElement.querySelector('input[name*="order-type"][value="pickup"]');
         if (pickupRadio) pickupRadio.checked = true;
 
-        dateInput.value = tomorrowStr;
+        dateInput.value = defaultDate;
         timeSelect.value = '';
 
         if (wingSelect) wingSelect.value = '';
         if (flatInput) flatInput.value = '';
 
         toggleDeliveryFields();
+        syncDateConstraints();
       } catch (error) {
         console.error('Error processing order:', error);
         alert('There was an error processing your order. Please try again.');
@@ -878,29 +932,58 @@ function updateCartBadge() {
 }
 
 function addToCart(item, quantity) {
+  const normalizedItem = {
+    ...item,
+    prepType: item.prepType || 'instant',
+    prepHours: Math.max(0, Number(item.prepHours) || 0),
+    cutoffMode: item.cutoffMode || 'exact-hours',
+    isSameDayAllowed: item.isSameDayAllowed === true,
+    availableOrderTypes: Array.isArray(item.availableOrderTypes) ? item.availableOrderTypes : [],
+    availableDays: Array.isArray(item.availableDays) ? item.availableDays : [],
+    availableTimeSlots: Array.isArray(item.availableTimeSlots) ? item.availableTimeSlots : [],
+    blackoutDates: Array.isArray(item.blackoutDates) ? item.blackoutDates : [],
+    timeSlots: Array.isArray(item.timeSlots) ? item.timeSlots : (window.FoodSchedule ? window.FoodSchedule.DEFAULT_SLOTS : [])
+  };
+  if (window.FoodSchedule) {
+    const validation = window.FoodSchedule.validateCartSchedule([normalizedItem], normalizedItem.date, { id: normalizedItem.time, start: normalizedItem.timeStart || '', end: normalizedItem.timeEnd || '' }, normalizedItem.orderType, new Date());
+    if (!validation.valid) {
+      alert(validation.message);
+      return;
+    }
+  }
   const existingIndex = cart.findIndex(cartItem => 
-    cartItem.name === item.name &&
-    cartItem.orderType === item.orderType &&
-    cartItem.date === item.date &&
-    cartItem.time === item.time &&
-    cartItem.wing === item.wing &&
-    cartItem.flat === item.flat
+    cartItem.name === normalizedItem.name &&
+    cartItem.orderType === normalizedItem.orderType &&
+    cartItem.date === normalizedItem.date &&
+    cartItem.time === normalizedItem.time &&
+    cartItem.wing === normalizedItem.wing &&
+    cartItem.flat === normalizedItem.flat
   );
   if (existingIndex > -1) {
     cart[existingIndex].quantity = Math.min(10, cart[existingIndex].quantity + quantity);
   } else {
     cart.push({
-      id: item.id,
-      name: item.name,
-      price: item.basePrice,
-      qtyLabel: item.qty,
-      image: item.image,
+      id: normalizedItem.id,
+      name: normalizedItem.name,
+      price: normalizedItem.basePrice,
+      qtyLabel: normalizedItem.qty,
+      image: normalizedItem.image,
       quantity: quantity,
-      orderType: item.orderType,
-      date: item.date,
-      time: item.time,
-      wing: item.wing,
-      flat: item.flat
+      orderType: normalizedItem.orderType,
+      date: normalizedItem.date,
+      time: normalizedItem.time,
+      timeLabel: normalizedItem.timeLabel || normalizedItem.time,
+      wing: normalizedItem.wing,
+      flat: normalizedItem.flat,
+      prepType: normalizedItem.prepType,
+      prepHours: normalizedItem.prepHours,
+      cutoffMode: normalizedItem.cutoffMode,
+      isSameDayAllowed: normalizedItem.isSameDayAllowed,
+      availableOrderTypes: normalizedItem.availableOrderTypes,
+      availableDays: normalizedItem.availableDays,
+      availableTimeSlots: normalizedItem.availableTimeSlots,
+      blackoutDates: normalizedItem.blackoutDates,
+      timeSlots: normalizedItem.timeSlots
     });
   }
   saveCart();
@@ -946,8 +1029,13 @@ function renderCart() {
 
   checkoutContainer.style.display = 'block';
   let total = 0;
+  const scheduleItems = getCartScheduleItems(cart);
+  const cartValidation = window.FoodSchedule && cart.length
+    ? window.FoodSchedule.validateCartSchedule(scheduleItems, cart[0].date, { id: cart[0].time, start: cart[0].timeStart || '', end: cart[0].timeEnd || '' }, cart[0].orderType, new Date())
+    : { valid: true };
 
   container.innerHTML = `
+    ${cartValidation.valid ? '' : `<div class="cart-schedule-error">${cartValidation.message}</div>`}
     <div class="cart-items-list">
       ${cart.map((item, index) => {
         const itemTotal = item.price * item.quantity;
@@ -979,6 +1067,11 @@ function renderCart() {
 
   if (totalPriceEl) {
     totalPriceEl.textContent = `₹${total}`;
+  }
+  const checkoutButton = checkoutContainer.querySelector('.order-btn');
+  if (checkoutButton) {
+    checkoutButton.disabled = !cartValidation.valid;
+    checkoutButton.setAttribute('aria-disabled', String(!cartValidation.valid));
   }
 
   container.querySelectorAll('.cart-item__qty-btn.minus').forEach(btn => {
@@ -1028,6 +1121,14 @@ function initCartControls() {
     checkoutForm.addEventListener('submit', (e) => {
       e.preventDefault();
       if (cart.length === 0) return;
+      if (window.FoodSchedule) {
+        const validation = window.FoodSchedule.validateCartSchedule(getCartScheduleItems(cart), cart[0].date, { id: cart[0].time, start: cart[0].timeStart || '', end: cart[0].timeEnd || '' }, cart[0].orderType, new Date());
+        if (!validation.valid) {
+          alert(validation.message);
+          renderCart();
+          return;
+        }
+      }
 
       let grandTotal = 0;
       let message = `Hi! I want to order:\n\n`;
@@ -1037,9 +1138,9 @@ function initCartControls() {
         message += `${index + 1}. *${item.name}* (${item.qtyLabel})\n`;
         message += `   🔢 Qty: ${item.quantity} · 💰 Price: ₹${itemTotal}\n`;
         if (item.orderType === 'pickup') {
-          message += `   📋 Pickup (Date: ${formatIndianDate(item.date)}, Time: ${item.time}, Flat: W3-1010)\n`;
+          message += `   📋 Pickup (Date: ${formatIndianDate(item.date)}, Time: ${item.timeLabel || item.time}, Flat: W3-1010)\n`;
         } else {
-          message += `   📋 Delivery (Date: ${formatIndianDate(item.date)}, Time: ${item.time}, Wing: ${item.wing}, Flat: ${item.flat})\n`;
+          message += `   📋 Delivery (Date: ${formatIndianDate(item.date)}, Time: ${item.timeLabel || item.time}, Wing: ${item.wing}, Flat: ${item.flat})\n`;
         }
       });
       message += `\n💵 *Grand Total: ₹${grandTotal}*\n`;

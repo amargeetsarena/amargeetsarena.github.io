@@ -1,22 +1,46 @@
 [
     {
-        "id": "chocolate_cake",
-        "name": "Chocolate Cake",
-        "description": "Available to order: Delicious eggless chocolate cake, perfect for any occasion. No Onion No Garlic.",
-        "image": "images/chocolatecake.png",
+        "id": "suji_rava_cake",
+        "name": "Suji (Rava) Cake",
+        "description": "Available to order: Suji Cake is a light, fluffy, and moist Indian semolina cake with a delicate nutty flavor and cardamom aroma, perfect for quick tea-time enjoyment.",
+        "image": "images/sujicake_20260607192714.jpeg",
         "price": 250,
-        "unitLabel": "500 - 600 gm",
+        "unitLabel": "500 - 600 g",
         "foodType": "veg",
         "tags": [
-            "withoutoniongarlic",
-            "sweet"
+            "snack",
+            "dessert"
         ],
         "enabled": true,
         "visible": true,
         "deliveryType": "pickup",
-        "sortOrder": 1780853882918,
-        "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2026-06-07T17:38:02+00:00"
+        "sortOrder": 1781057953702,
+        "prepType": "advance",
+        "prepHours": 4,
+        "cutoffMode": "exact-hours",
+        "isSameDayAllowed": false,
+        "availableOrderTypes": [
+            "pickup"
+        ],
+        "availableDays": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday"
+        ],
+        "availableTimeSlots": [
+            "morning",
+            "afternoon",
+            "evening"
+        ],
+        "blackoutDates": [],
+        "maxAdvanceDays": 0,
+        "leadTimeByOrderType": [],
+        "createdAt": "2026-06-07T17:28:48+00:00",
+        "updatedAt": "2026-06-10T02:19:13+00:00"
     },
     {
         "id": "maggi_pakoda",
@@ -32,14 +56,38 @@
         "enabled": true,
         "visible": true,
         "deliveryType": "pickup",
-        "sortOrder": 1780853870967,
+        "sortOrder": 1781057917036,
+        "prepType": "advance",
+        "prepHours": 3,
+        "cutoffMode": "exact-hours",
+        "isSameDayAllowed": false,
+        "availableOrderTypes": [
+            "pickup"
+        ],
+        "availableDays": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday"
+        ],
+        "availableTimeSlots": [
+            "morning",
+            "afternoon",
+            "evening"
+        ],
+        "blackoutDates": [],
+        "maxAdvanceDays": 0,
+        "leadTimeByOrderType": [],
         "createdAt": "2025-01-01T00:00:00Z",
-        "updatedAt": "2026-06-07T17:37:50+00:00"
+        "updatedAt": "2026-06-10T02:18:37+00:00"
     },
     {
         "id": "poda_pitha",
         "name": "Poda Pitha",
-        "description": "Available to order: Poda Pitha is a traditional Odia baked rice cake with a caramelized, slightly crispy exterior and soft, fluffy interior, made from fermented rice batter, jaggery or sugar, and coconut, offering a rich, sweet flavor with hints of cardamom.",
+        "description": "Available for Pre-order before 24 Hrs: Poda Pitha is a traditional Odia baked rice cake with a caramelized, slightly crispy exterior and soft, fluffy interior, made from fermented rice batter, jaggery or sugar, and coconut, offering a rich, sweet flavor with hints of cardamom.",
         "image": "images/podapitha_20260607192454.jpeg",
         "price": 300,
         "unitLabel": "500 - 600 gm",
@@ -48,28 +96,77 @@
         "enabled": true,
         "visible": true,
         "deliveryType": "pickup",
-        "sortOrder": 1780853839839,
+        "sortOrder": 1781057885207,
+        "prepType": "advance",
+        "prepHours": 24,
+        "cutoffMode": "slot-based",
+        "isSameDayAllowed": false,
+        "availableOrderTypes": [
+            "pickup",
+            "delivery"
+        ],
+        "availableDays": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday"
+        ],
+        "availableTimeSlots": [
+            "morning",
+            "afternoon",
+            "evening"
+        ],
+        "blackoutDates": [],
+        "maxAdvanceDays": 24,
+        "leadTimeByOrderType": [],
         "createdAt": "2026-06-07T17:25:48+00:00",
-        "updatedAt": "2026-06-07T17:37:19+00:00"
+        "updatedAt": "2026-06-10T02:18:05+00:00"
     },
     {
-        "id": "suji_rava_cake",
-        "name": "Suji (Rava) Cake",
-        "description": "Available to order: Suji Cake is a light, fluffy, and moist Indian semolina cake with a delicate nutty flavor and cardamom aroma, perfect for quick tea-time enjoyment.",
-        "image": "images/sujicake_20260607192714.jpeg",
+        "id": "chocolate_cake",
+        "name": "Chocolate Cake",
+        "description": "Available to order: Delicious eggless chocolate cake, perfect for any occasion. No Onion No Garlic.",
+        "image": "images/chocolatecake.png",
         "price": 250,
-        "unitLabel": "500 - 600 g",
+        "unitLabel": "500 - 600 gm",
         "foodType": "veg",
         "tags": [
-            "snack",
-            "dessert"
+            "withoutoniongarlic",
+            "sweet"
         ],
         "enabled": true,
         "visible": true,
         "deliveryType": "pickup",
-        "sortOrder": 1780853816773,
-        "createdAt": "2026-06-07T17:28:48+00:00",
-        "updatedAt": "2026-06-07T17:36:56+00:00"
+        "sortOrder": 1781057833157,
+        "prepType": "advance",
+        "prepHours": 2,
+        "cutoffMode": "exact-hours",
+        "isSameDayAllowed": true,
+        "availableOrderTypes": [
+            "pickup"
+        ],
+        "availableDays": [
+            "monday",
+            "tuesday",
+            "wednesday",
+            "thursday",
+            "friday",
+            "saturday",
+            "sunday"
+        ],
+        "availableTimeSlots": [
+            "morning",
+            "afternoon",
+            "evening"
+        ],
+        "blackoutDates": [],
+        "maxAdvanceDays": 0,
+        "leadTimeByOrderType": [],
+        "createdAt": "2025-01-01T00:00:00Z",
+        "updatedAt": "2026-06-10T02:17:13+00:00"
     },
     {
         "id": "haldi_patra_pitha",

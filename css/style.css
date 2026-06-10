@@ -373,6 +373,41 @@ header {
   pointer-events: none;
 }
 
+.menu-item__prep-note,
+.delivery-schedule-note,
+.cart-schedule-error {
+  margin-top: 8px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  line-height: 1.35;
+}
+
+.menu-item__prep-note {
+  padding: 0 16px 8px;
+}
+
+.delivery-schedule-note--slots {
+  color: var(--text-muted);
+}
+
+.cart-schedule-error {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff1f1;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}
+
+.delivery-time option:disabled {
+  color: #9ca3af;
+}
+
+.menu-item.disabled,
+.menu-item.is-schedule-disabled {
+  opacity: 0.75;
+}
+
 .menu-item__share-btn::after {
   content: 'Share';
   font-size: 0.73rem;
